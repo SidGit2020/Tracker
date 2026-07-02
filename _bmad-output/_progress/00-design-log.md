@@ -20,7 +20,7 @@
 
 | Task | Started | Agent |
 |------|---------|-------|
-| Product Brief (Phase 1) — Step 12: Create Product Brief (paused, not yet started) | 2026-07-02 | Saga |
+| Trigger Mapping (Phase 2) — not yet started | 2026-07-02 | — |
 
 **Rules:** Mark what you start. Complete it when done (move to Log). One task at a time per agent.
 
@@ -53,8 +53,17 @@
 - Completed: Welcome, Client Profile, Vision, Positioning, Business Model (none), Target Users, Product Concept, Success Criteria, Competitive Landscape, Constraints, Platform Strategy, Tone of Voice
 - All checkpoints confirmed first try, no corrections needed
 - Working draft: `_progress/dialog/product-brief-draft.md`
-- Paused before Step 12 (Create Product Brief) — user will resume in a future session
-- **Next session: resume at Step 12** — assemble `design-artifacts/A-Product-Brief/01-product-brief.md` from the working draft, then continue to Content Init (Step 13) and onward
+
+### 2026-07-02 — Product Brief document generated (Step 12, Phase 1)
+- Strategic narrative presented as coherent story, confirmed first try, no adjustments needed
+- Generated: `A-Product-Brief/project-brief.md`
+- Dialog files updated: `progress-tracker.md` (status: complete), `decisions.md`
+
+### 2026-07-02 — Phase 1 marked complete, skipping to Phase 2
+- Decision: user chose to skip remaining "complete" brief-level sub-steps (13–36: Content & Language, Visual Direction, Platform Requirements documents, Analyze/Summary) and move directly to Phase 2 (Trigger Mapping)
+- `wds-workflow-status.yaml` updated: `phase_1_product_brief: complete`
+- Content/Visual/Platform detail docs can be produced later if needed — the core Product Brief (`project-brief.md`) is the authoritative strategic foundation going forward
+- **Next session: start Phase 2 — Trigger Mapping**
 
 ---
 

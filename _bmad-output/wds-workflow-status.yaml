@@ -15,7 +15,7 @@ config:
 
 phases:
   phase_0_project_setup: complete
-  phase_1_product_brief: in_progress
+  phase_1_product_brief: complete
   phase_2_trigger_mapping: not_started
   phase_3_ux_scenarios: not_started
   phase_4_ux_design: not_started
