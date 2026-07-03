@@ -1,0 +1,263 @@
+# ============================================================================
+# PROTOTYPE WORK FILE: Breakdown (covers scenario steps 2.1, 2.2)
+# ============================================================================
+# Purpose: Complete planning document for section-by-section implementation
+# Created: 2026-07-03
+# Page Specs:
+#   ../../2.1-monthly-breakdown/2.1-monthly-breakdown.md
+#   ../../2.2-monthly-breakdown/2.2-monthly-breakdown.md
+# Logical View Map: ./Logical-View-Map.md
+# ============================================================================
+
+metadata:
+  page_number: "2.1-2.2"
+  page_name: "Breakdown"
+  scenario: "02-siddi-reviews-the-month"
+  complexity: "medium"
+  estimated_sections: 6
+  estimated_time: "100 minutes"
+
+  device_compatibility:
+    type: "desktop-only"
+    primary_viewport: "900px"
+    test_viewports:
+      - width: 900
+        height: 600
+        device: "Desktop (bp-desktop reference, matches spec's base viewport)"
+    breakpoints: []  # Mobile responsive diff deferred to a later pass — see PROTOTYPE-ROADMAP.md Change Log
+    touch_optimized: false
+    hover_interactions: true
+
+  dependencies:
+    - "shared/prototype-api.js"
+    - "shared/init.js"
+    - "shared/utils.js"
+    - "components/modal.js"   # Overlay — Drawer/Sheet variant (breakdown-drilldown-panel)
+
+# ============================================================================
+# DESIGN TOKENS — same as Scenario 01, from D-Design-System/00-design-system.md
+# ============================================================================
+
+design_tokens:
+  spacing_scale:
+    space-3xs: "2px"
+    space-2xs: "4px"
+    space-xs: "8px"
+    space-sm: "12px"
+    space-md: "16px"
+    space-lg: "24px"
+    space-xl: "32px"
+    space-2xl: "48px"
+    space-3xl: "64px"
+
+  type_scale:
+    text-xs: "12px / 1.4"
+    text-sm: "14px / 1.4"
+    text-md: "16px / 1.5"
+    text-lg: "18px / 1.4"
+    text-xl: "20px / 1.3"
+    text-2xl: "24px / 1.25"
+    text-3xl: "30px / 1.2"
+
+  breakpoints:
+    bp-mobile: "up to 639px (deferred — not built this pass)"
+    bp-desktop: "640px and up (this pass's target)"
+
+  components_available:
+    - "Overlay — Drawer/Sheet variant (components/modal.js) — used by breakdown-drilldown-panel"
+
+# ============================================================================
+# PAGE REQUIREMENTS (from specification)
+# ============================================================================
+
+page_purpose: |
+  Siddi's unhurried monthly review: see per-category totals at a glance
+  (headline total + bar chart), browse past months, and drill into a
+  category's individual transactions to spot-check the number against memory.
+
+user_context:
+  - Siddi opens the app near month-end specifically to review, not to log anything
+  - Multi-month history exists (April-July 2026 in demo data)
+  - Current month (July 2026) is the default view on load
+
+success_criteria:
+  - Total + bar chart reflect the selected month, re-normalizing bar widths to that month's largest category
+  - Month selector defaults to current month; prev disables at the earliest month with data, next disables at the current month
+  - Clicking a category bar opens a read-only drill-down panel for that category's transactions in the selected month
+  - Drill-down list is sorted most-recent-first
+  - Empty months show "No entries for {Month} {Year}" with no CTA
+
+# ============================================================================
+# DEMO DATA REQUIREMENTS
+# ============================================================================
+
+demo_data_needed:
+  current_user:
+    firstName: "Siddi"
+
+  months_covered: "April 2026 (earliest) through July 2026 (current)"
+  july_totals: "Food 4200 / Shopping 3100 / Transport 2800 / Other 2350 = Rs 12,450 (matches spec mockup)"
+  edge_cases_in_data:
+    - "April has only 2 of 4 categories (tests category-set changes month to month)"
+    - "June includes a custom category (Books) not in the preset list"
+
+# ============================================================================
+# OBJECT ID MAP
+# ============================================================================
+
+object_ids:
+  header:
+    - "breakdown-header"
+    - "breakdown-header-title"
+    - "breakdown-header-month-selector"
+
+  total:
+    - "breakdown-total"
+    - "breakdown-total-label"
+    - "breakdown-total-amount"
+
+  chart:
+    - "breakdown-chart"
+    - "breakdown-chart-row"
+
+  drilldown:
+    - "breakdown-drilldown-panel"
+    - "breakdown-drilldown-title"
+    - "breakdown-drilldown-close"
+    - "breakdown-drilldown-row"
+
+# ============================================================================
+# SECTION BREAKDOWN (implementation order) — approved 2026-07-03
+# ============================================================================
+
+sections:
+  - id: "section-1"
+    name: "Page Shell & Foundation"
+    scope: "HTML skeleton, Tailwind config w/ design tokens (same token set as Scenario 01), demo-data loading (multi-month), shared JS wiring"
+    files_affected: ["2.1-monthly-breakdown.html"]
+    dependencies: ["shared/prototype-api.js", "shared/init.js", "shared/utils.js"]
+    object_ids: []
+    acceptance_criteria:
+      - "Page loads, multi-month demo data auto-loads on first open"
+      - "900px container renders without horizontal scroll"
+      - "No console errors"
+    placeholder_message: "🚧 Setting up the page shell — header and month selector next!"
+    status: "complete"
+
+  - id: "section-2"
+    name: "Header & Month Selector"
+    scope: "Page title, prev/next month navigation with data-driven bounds (disables at earliest-month-with-data and at current month), defaults to current month on load"
+    files_affected: ["2.1-monthly-breakdown.html"]
+    dependencies: []
+    object_ids: ["breakdown-header", "breakdown-header-title", "breakdown-header-month-selector"]
+    acceptance_criteria:
+      - "Defaults to July 2026 (current month) on load"
+      - "Prev arrow disabled at April 2026 (earliest month with data)"
+      - "Next arrow disabled at July 2026 (no browsing into the future)"
+      - "Switching months re-renders Total + Chart for the new month"
+    placeholder_message: "🚧 Building the total + bar chart next!"
+    status: "complete"
+
+  - id: "section-3"
+    name: "Total Summary & Bar Chart"
+    scope: "Headline total amount, horizontal bar chart sorted largest-to-smallest, bar widths proportional to the selected month's largest category, click-to-drill-down"
+    files_affected: ["2.1-monthly-breakdown.html"]
+    dependencies: []
+    object_ids: ["breakdown-total", "breakdown-total-label", "breakdown-total-amount", "breakdown-chart", "breakdown-chart-row"]
+    acceptance_criteria:
+      - "July 2026 shows Rs 12,450 total, 4 bars (Food largest, then Shopping, Transport, Other)"
+      - "Bar widths re-normalize per month (not a fixed absolute scale)"
+      - "April 2026 shows only 2 bars (Food, Other) — category set changes correctly per month"
+      - "Clicking any bar opens the drill-down panel for that category + selected month"
+    placeholder_message: "🚧 Building the drill-down panel next!"
+    status: "complete"
+
+  - id: "section-4"
+    name: "Drill-down Panel / Overlay"
+    scope: "Overlay — Drawer/Sheet variant (desktop: right-side drawer); category title, close (×) button, read-only transaction list sorted most-recent-first"
+    files_affected: ["2.1-monthly-breakdown.html"]
+    dependencies: ["components/modal.js"]
+    object_ids: ["breakdown-drilldown-panel", "breakdown-drilldown-title", "breakdown-drilldown-close", "breakdown-drilldown-row"]
+    acceptance_criteria:
+      - "Panel shows correct category name + only that category's transactions for the selected month"
+      - "Transactions sorted most-recent-first"
+      - "Close returns focus to the chart, dims background while open"
+      - "Panel is read-only — no edit/delete affordances"
+    placeholder_message: "🚧 Wiring up Loading/Empty/Error states next!"
+    status: "complete"
+
+  - id: "section-5"
+    name: "Page States"
+    scope: "Loading (skeleton) / Empty (\"No entries for {Month} {Year}\", no CTA) / Error (inline + Retry) for the chart; Loading/Error for the drill-down panel"
+    files_affected: ["2.1-monthly-breakdown.html"]
+    dependencies: []
+    object_ids: []
+    acceptance_criteria:
+      - "Switching to a month with zero entries shows the Empty state correctly"
+      - "Month selector remains usable during Error state"
+      - "Loading skeleton shown briefly on initial load and after month switch"
+    placeholder_message: "🚧 Final polish pass next!"
+    status: "complete"
+
+  - id: "section-6"
+    name: "Final Integration Polish"
+    scope: "Month-navigation loop (repeated switching doesn't leak state), edge cases (April's 2-category month, June's custom Books category rendering correctly, selector boundary disabling both directions)"
+    files_affected: ["2.1-monthly-breakdown.html"]
+    dependencies: []
+    object_ids: []
+    acceptance_criteria:
+      - "Rapid month switching doesn't corrupt chart/total/drilldown state"
+      - "Books (custom category) renders correctly as a bar in June, doesn't appear in months without it"
+      - "No console errors across the full month-browsing + drill-down loop"
+    placeholder_message: "✅ Prototype complete — ready for review!"
+    status: "complete"
+
+# ============================================================================
+# TESTING CHECKLIST
+# ============================================================================
+
+testing_checklist:
+  functionality:
+    - "[ ] Month selector bounds correct (April disable-prev, July disable-next)"
+    - "[ ] Total + chart correct for every demo month"
+    - "[ ] Drill-down shows correct transactions per category+month, sorted correctly"
+    - "[ ] Empty-month state triggers correctly (test a month with no data, if any gap exists — currently April-July are all populated, so this needs a synthetic test)"
+    - "[ ] Data persists across reload (sessionStorage)"
+
+  desktop_testing:
+    - "[ ] 900px viewport matches spec Layout Structure"
+    - "[ ] Drill-down panel is a right-side drawer, doesn't cover the whole chart"
+
+  code_quality:
+    - "[ ] All Object IDs present and correctly named"
+    - "[ ] No console errors"
+    - "[ ] Tailwind classes use design-token values, no raw px"
+
+# ============================================================================
+# MIGRATION NOTES
+# ============================================================================
+
+migration_todos:
+  - "Replace PrototypeAPI calls with real .NET Core backend calls"
+  - "Mobile responsive diff (bp-mobile) is specced but not built this pass — build as a follow-up section before this scenario is considered fully done"
+
+# ============================================================================
+# KNOWN ISSUES / EDGE CASES
+# ============================================================================
+
+edge_cases:
+  - "No month in the demo data range has zero entries — Empty state needs a synthetic/manual test (e.g. a Prototype Controls hook, similar to Scenario 01's) rather than a naturally reachable demo month"
+  - "2.2's spec-defined 'Empty' state (category total exists but no line items) is explicitly framed as an edge case that 'shouldn't normally occur' — not built as a reachable state"
+
+# ============================================================================
+# COMPLETION CRITERIA
+# ============================================================================
+
+definition_of_done:
+  - "All 6 sections implemented and tested"
+  - "All object IDs present and correct"
+  - "Demo data's April-July range fully browsable with correct totals/charts"
+  - "Drill-down panel accurate for every category/month combination"
+  - "No console errors"
+  - "Story files document all 6 sections"
+  - "Mobile diff explicitly flagged as deferred, not silently missing"

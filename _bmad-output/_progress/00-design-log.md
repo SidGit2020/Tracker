@@ -21,6 +21,9 @@
 - [x] Design System extraction [M] — modal pattern extracted as the `Overlay` component (2 uses: 1.2, 2.2)
 - [x] Design Delivery [H] — package for dev handoff (before Phase 5)
 
+**Deferred to a future version:**
+- [ ] Scenario 02 (Monthly Category Breakdown) mobile responsive diff (`bp-mobile`, 375px) — prototype is desktop-only for v1; the layout is already specified in `2.1-monthly-breakdown.md`/`2.2-monthly-breakdown.md`, just not built as an interactive prototype. User decision 2026-07-03.
+
 ---
 
 ## Current
@@ -53,6 +56,21 @@
 | 01-siddi-logs-an-expense | 1.3 | Home / Log Screen (toast + updated list) | specified | 2026-07-02 |
 | 02-siddi-reviews-the-month | 2.1 | Monthly Category Breakdown | specified | 2026-07-02 |
 | 02-siddi-reviews-the-month | 2.2 | Monthly Category Breakdown (category drill-down panel) | specified | 2026-07-02 |
+| 01-siddi-logs-an-expense | 1.1 | Home / Log Screen | building | 2026-07-03 |
+| 01-siddi-logs-an-expense | 1.2 | Home / Log Screen (confirm popup) | building | 2026-07-03 |
+| 01-siddi-logs-an-expense | 1.3 | Home / Log Screen (toast + updated list) | building | 2026-07-03 |
+| 01-siddi-logs-an-expense | 1.1 | Home / Log Screen | built | 2026-07-03 |
+| 01-siddi-logs-an-expense | 1.2 | Home / Log Screen (confirm popup) | built | 2026-07-03 |
+| 01-siddi-logs-an-expense | 1.3 | Home / Log Screen (toast + updated list) | built | 2026-07-03 |
+| 02-siddi-reviews-the-month | 2.1 | Monthly Category Breakdown | building | 2026-07-03 |
+| 02-siddi-reviews-the-month | 2.2 | Monthly Category Breakdown (category drill-down panel) | building | 2026-07-03 |
+| 02-siddi-reviews-the-month | 2.1 | Monthly Category Breakdown | built | 2026-07-03 |
+| 02-siddi-reviews-the-month | 2.2 | Monthly Category Breakdown (category drill-down panel) | built | 2026-07-03 |
+| 01-siddi-logs-an-expense | 1.1 | Home / Log Screen | approved | 2026-07-03 |
+| 01-siddi-logs-an-expense | 1.2 | Home / Log Screen (confirm popup) | approved | 2026-07-03 |
+| 01-siddi-logs-an-expense | 1.3 | Home / Log Screen (toast + updated list) | approved | 2026-07-03 |
+| 02-siddi-reviews-the-month | 2.1 | Monthly Category Breakdown | approved | 2026-07-03 |
+| 02-siddi-reviews-the-month | 2.2 | Monthly Category Breakdown (category drill-down panel) | approved | 2026-07-03 |
 
 **Status values:** `discussed` → `wireframed` → `specified` → `explored` → `building` → `built` → `approved` | `removed`
 
@@ -293,6 +311,81 @@ Shared: scrim/dim background, `space-lg` padding, `space-md` element gap, Defaul
 **This closes out every item that was in the Phase 4 backlog** (flagged open items → responsive diffs → validate specs → design system extraction → design delivery), completed across this session in Suggest-mode-style batched checkpoints.
 
 **Next:** Phase 5 — Agentic Development (Mimir Builder)
+
+---
+
+### 2026-07-03 — Scenario 01 (Home) interactive prototype built — Phase 5 [P] Prototyping
+
+**Agent:** Claude (Prototyping activity, steps-p/)
+**Scope:** Full interactive prototype for steps 1.1-1.3 (one logical view, "Home," per `work/Logical-View-Map.md`) — Quick Add, category selection with case-insensitive custom-category dedup, Confirm Popup/Overlay, save flow, stacking toasts, Loading/Empty/Error states, and both breakpoints (`bp-mobile`/`bp-desktop`).
+
+**Location:** `C-UX-Scenarios/01-siddi-logs-an-expense/Prototype/` — see `PROTOTYPE-ROADMAP.md` for the folder guide and `work/1.1-home-Work.yaml` for the full section/object-ID plan.
+
+**Process note:** the user initially asked to skip per-section story files ("I need only prototypes") to get straight to working code; after building Sections 1-5 directly, the user asked for story files to be added back for bookkeeping. Sections 1-5 were documented retroactively (`stories/Home.1` through `Home.5`), then Sections 6-7 proceeded with stories written first as originally designed.
+
+**Tooling limitation found:** no interactive browser-automation tool (Puppeteer) is available in this environment. Self-verification instead used headless Chrome (`--dump-dom`, `--screenshot`, and real DOM-event simulation against temporary instrumented copies of the file) plus code review. Also discovered this machine's headless Chrome silently enforces a ~482px minimum viewport width regardless of `--window-size` — screenshots requested below that are unreliable (content lays out at ~482px, image is cropped to the requested smaller size). Worked around it with fixed-width DOM harnesses and direct `getBoundingClientRect()` measurement instead of trusting sub-482px screenshots.
+
+**Real bug found and fixed during verification:** `data/demo-data.js`/`.json` seed entries included one dated "today" at a fixed clock time; since new entries are stamped with the actual current time, this caused newly-saved entries to sort *below* that seed entry whenever tested before that time of day. Fixed by shifting all seed timestamps back one calendar day (see `stories/Home.7-final-integration-polish.md` for the full root-cause writeup).
+
+**Status:** All 7 planned sections complete (`work/1.1-home-Work.yaml`). **Not yet reviewed by the user in a live browser** — recommended before treating this scenario as done.
+
+**Next:** User review of the live prototype (`1.1-home.html`), then either Scenario 02 (Monthly Category Breakdown) prototyping or Acceptance Testing [T] for this scenario.
+
+---
+
+### 2026-07-03 — Scenario 02 (Breakdown) interactive prototype built, desktop-only — Phase 5 [P] Prototyping
+
+**Agent:** Claude (Prototyping activity, steps-p/)
+**Scope:** Desktop-only (900px) prototype for steps 2.1-2.2 (one logical view, "Breakdown," per `work/Logical-View-Map.md`) — header + data-driven month selector, headline total, horizontal bar chart with click-to-drill-down, Overlay Drawer/Sheet variant (this project's first real use of that variant), Loading/Empty/Error states. **Mobile responsive diff intentionally deferred** to a later pass — user explicitly chose "Desktop-only for now" during setup, unlike Scenario 01 where both breakpoints were built together.
+
+**Location:** `C-UX-Scenarios/02-siddi-reviews-the-month/Prototype/` — see `PROTOTYPE-ROADMAP.md` and `work/2.1-breakdown-Work.yaml`.
+
+**Demo data:** fresh multi-month dataset (April-July 2026, 27 entries) rather than reusing Scenario 01's — July's category totals deliberately match the spec's own mockup numbers (Rs 12,450 total). Designed to exercise month-selector boundaries, a 2-category month (April), and a custom-category month (June, "Books").
+
+**Two real bugs found and fixed during verification** (same headless-Chrome + DOM-instrumentation method as Scenario 01 — see that session's tooling-limitation note, which applies here too):
+1. **Dev Mode / drawer visual collision** — the drill-down drawer is intentionally flush to the viewport's right edge, the same corner as the fixed Dev Mode toggle button, so the toggle covered the drawer's close button in every viewport width tested (not a narrow-viewport artifact this time). Fixed by hiding Dev Mode's toggle while any overlay is open (`body.overlay-open` class) — applied to both this scenario's and **Scenario 01's** `components/modal.js` for consistency.
+2. **`state.monthKey` sync fragility** — `loadMonth()` fetched data for a given month but didn't update the canonical `state.monthKey` itself, only working correctly because the sole real caller (`changeMonth()`) happened to set it first. Not reachable through the actual UI, but a latent bug for any future direct caller. Fixed by making `loadMonth()` the single source of truth for `state.monthKey`.
+
+**Status:** All 6 planned sections complete (`work/2.1-breakdown-Work.yaml`). **Not yet reviewed by the user in a live browser.**
+
+**Next:** User review of both prototypes, then either the mobile responsive diff for this scenario, or Acceptance Testing [T].
+
+---
+
+### 2026-07-03 — DD-001 Acceptance Testing complete, APPROVED — Phase 5 [T] Acceptance Testing
+
+**Agent:** Claude (Acceptance Testing activity, steps-t/)
+**Scope:** Full TS-001 validation against both scenarios' built prototypes (Scenario 01 full-responsive, Scenario 02 desktop-only per its documented deferral).
+
+**Test execution:** All 5 happy-path tests, 2 error-state tests, 5/6 edge-case tests (1 correctly marked N/A — Scenario 02's mobile viewport boundary test, since that responsive diff isn't built), and design-system token compliance all passed on first execution — no functional or visual-fidelity defects found. Same headless-Chrome + real-DOM-event-simulation methodology as the Prototyping phase (no interactive automation tool available in this environment; see that phase's tooling-limitation notes, which still apply).
+
+**3 High-severity accessibility issues found, fixed, and reverified same session** (all explicit `must_fix` items per TS-001's own sign-off criteria):
+1. **ISS-001** — Toast text contrast 2.54:1 (needs 4.5:1): white text on `success-500` #10b981. Fixed by darkening the token to #047857 (live-measured retest: 5.48:1).
+2. **ISS-002** — Category buttons 39px tall (needs 44px minimum): `py-xs` → `py-sm` padding fix (live-measured retest: 47px).
+3. **ISS-003** — Category bars (`breakdown-chart-row`) not keyboard-accessible — blocked Scenario 02 entirely for keyboard-only users. Fixed by changing `<div>` → `<button>` (matches the pattern already used correctly in Scenario 01).
+
+All 3 fixes were regression-tested against the already-passing happy-path/drill-down flows — no regressions.
+
+2 Low-severity issues remain open, not blocking: ISS-004 (Recent Entries rows not keyboard-accessible — relevant once Phase 3 edit/delete ships) and ISS-005 (toast missing `aria-live` region).
+
+**Artifacts created:**
+- `test-artifacts/DD-001/TR-001-expense-tracking-v1-2026-07-03.md` — full test report + retest addendum
+- `test-artifacts/DD-001/issues/` — ISS-001 through ISS-005, plus summary
+- `test-artifacts/DD-001/SIGN-OFF-DD-001.md` — signed off by SIDDI
+
+**Result:** ✅ **APPROVED** — user confirmed sign-off. All 5 page states across both scenarios now marked `approved` in the Design Loop Status table above.
+
+**Next:** Scenario 02's mobile responsive diff (deferred, not yet built) is the main remaining gap before this delivery is fully complete across all specified breakpoints. Otherwise, this delivery is ready — next could be real production Development [D] handoff to build the actual .NET Core + Angular app per `deliveries/DD-001-expense-tracking-v1.yaml`.
+
+---
+
+### 2026-07-03 — Phase 5 [P]/[T] activities concluded for v1; routing decisions for what's next
+
+**User decisions:**
+- **Scenario 02 mobile responsive diff → deferred to a future version.** Not blocking v1. Layout is already fully specified (`2.1-monthly-breakdown.md`/`2.2-monthly-breakdown.md` Responsive Diff sections); only the interactive prototype build is deferred. Added to Backlog above under "Deferred to a future version."
+- **Production Development will use BMad's own story pipeline** (`bmad-create-epics-and-stories` → `bmad-create-story` → `bmad-dev-story`/`bmad-agent-dev`), **not** WDS's [D] Development activity in `wds-5-agentic-development`. The approved prototypes (`C-UX-Scenarios/*/Prototype/`), `deliveries/DD-001-expense-tracking-v1.yaml`, and the approved page specs remain the source-of-truth design contract that BMad's dev pipeline should be pointed at.
+
+**Effective state:** WDS Phase 5 work for v1 is done — both scenarios prototyped and approved (DD-001 signed off 2026-07-03). Next actions on this project happen outside `wds-5-agentic-development`, in BMad's epics/stories/dev-story flow.
 
 ---
 

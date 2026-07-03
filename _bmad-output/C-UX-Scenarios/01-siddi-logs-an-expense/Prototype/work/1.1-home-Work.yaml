@@ -1,0 +1,413 @@
+# ============================================================================
+# PROTOTYPE WORK FILE: Home (covers scenario steps 1.1, 1.2, 1.3)
+# ============================================================================
+# Purpose: Complete planning document for section-by-section implementation
+# Created: 2026-07-03
+# Page Specs:
+#   ../../1.1-home/1.1-home.md
+#   ../../1.2-home/1.2-home.md
+#   ../../1.3-home/1.3-home.md
+# Logical View Map: ./Logical-View-Map.md
+# ============================================================================
+
+metadata:
+  page_number: "1.1-1.3"
+  page_name: "Home"
+  scenario: "01-siddi-logs-an-expense"
+  complexity: "medium"
+  estimated_sections: 7
+  estimated_time: "120 minutes"
+
+  device_compatibility:
+    type: "responsive"
+    primary_viewport: "375px"
+    test_viewports:
+      - width: 375
+        height: 667
+        device: "Mobile (bp-mobile reference)"
+      - width: 900
+        height: 600
+        device: "Desktop (bp-desktop reference)"
+    breakpoints: [640]  # bp-desktop starts at 640px per D-Design-System/00-design-system.md
+    touch_optimized: true
+    hover_interactions: true
+
+  dependencies:
+    - "shared/prototype-api.js"
+    - "shared/init.js"
+    - "shared/utils.js"
+    - "components/modal.js"   # Overlay — Centered Dialog variant (home-confirm-popup)
+    - "components/toast.js"   # home-toast
+
+# ============================================================================
+# DESIGN TOKENS (Tailwind Config) — from D-Design-System/00-design-system.md
+# ============================================================================
+
+design_tokens:
+  spacing_scale:
+    space-3xs: "2px"
+    space-2xs: "4px"
+    space-xs: "8px"
+    space-sm: "12px"
+    space-md: "16px"
+    space-lg: "24px"
+    space-xl: "32px"
+    space-2xl: "48px"
+    space-3xl: "64px"
+
+  type_scale:
+    text-xs: "12px / 1.4"
+    text-sm: "14px / 1.4"
+    text-md: "16px / 1.5"
+    text-lg: "18px / 1.4"
+    text-xl: "20px / 1.3"
+    text-2xl: "24px / 1.25"
+    text-3xl: "30px / 1.2"
+
+  breakpoints:
+    bp-mobile: "up to 639px"
+    bp-desktop: "640px and up"
+
+  tailwind_config:
+    theme_extend:
+      colors:
+        tracker:
+          50: "#eff6ff"
+          500: "#2563eb"
+          600: "#1d4ed8"
+          700: "#1e40af"
+        success:
+          500: "#10b981"
+      fontFamily:
+        sans: "['system-ui', 'sans-serif']"
+
+  components_available:
+    - "Overlay — Centered Dialog variant (components/modal.js) — used by home-confirm-popup"
+    - "toast (components/toast.js) — used by home-toast, supports stacking"
+
+# ============================================================================
+# PAGE REQUIREMENTS (from specification)
+# ============================================================================
+
+page_purpose: |
+  Siddi's single entry point: log an expense in a couple of taps (Quick Add),
+  confirm it before it's committed (Confirm Popup overlay), and see it register
+  (toast + updated Recent Entries list) — no navigation, no menu, no login.
+
+user_context:
+  - Siddi opens the bookmarked/pinned app right after paying for something
+  - Recent entries for the current month may already exist (or list is empty)
+  - No running month total shown here — that lives on the Monthly Breakdown page (scenario 02)
+
+success_criteria:
+  - Amount + category can be entered and submitted in a couple of taps
+  - Confirm popup shows entry summary before it's saved (pessimistic save)
+  - Cancel returns to Home with fields still filled (not cleared)
+  - Successful save shows a toast, resets Quick Add to idle, and adds the new entry to the top of Recent Entries
+  - Custom category input merges case-insensitively with existing categories (presets + prior custom values), no duplicates
+  - Multiple rapid saves stack toasts vertically, each with an independent ~2.5s timer
+
+# ============================================================================
+# DEMO DATA REQUIREMENTS
+# ============================================================================
+
+demo_data_needed:
+  current_user:
+    firstName: "Siddi"
+    lastName: ""
+    email: "siddi@example.com"
+
+  categories:
+    presets: ["Food", "Transport", "Shopping", "Other"]
+    custom_seed: ["Books"]
+
+  entries: "9 demo entries spanning 2026-06-30 to 2026-07-03 — see data/demo-data.json"
+
+  example_submission:
+    amount: 150
+    category: "Food"
+
+# ============================================================================
+# OBJECT ID MAP (all interactive elements, across 1.1 + 1.2 + 1.3)
+# ============================================================================
+
+object_ids:
+  quick_add:
+    - "home-quickadd"
+    - "home-quickadd-amount-input"
+    - "home-quickadd-category-food"
+    - "home-quickadd-category-transport"
+    - "home-quickadd-category-shopping"
+    - "home-quickadd-category-other"
+    - "home-quickadd-category-custom-input"
+    - "home-quickadd-submit"
+
+  recent_entries:
+    - "home-recent"
+    - "home-recent-heading"
+    - "home-recent-count-selector"
+    - "home-recent-entry-row"
+
+  confirm_popup:
+    - "home-confirm-popup"
+    - "home-confirm-title"
+    - "home-confirm-amount"
+    - "home-confirm-category"
+    - "home-confirm-cancel"
+    - "home-confirm-submit"
+
+  toast:
+    - "home-toast"
+    - "home-toast-message"
+
+# ============================================================================
+# SECTION BREAKDOWN (implementation order) — approved 2026-07-03
+# ============================================================================
+
+sections:
+  - id: "section-1"
+    name: "Page Shell & Foundation"
+    scope: "HTML skeleton, Tailwind CDN + design-token config, shared/init.js wiring, demo-data auto-load, responsive container (mobile-first, bp-desktop breakpoint)"
+    files_affected: ["1.1-home.html"]
+    dependencies: ["shared/prototype-api.js", "shared/init.js", "shared/utils.js"]
+    object_ids: []
+    tailwind_classes:
+      - "Layout: min-h-screen, bg-gray-50"
+      - "Container: max-w-[900px] mx-auto, px-[space-md] md:px-[space-xl]"
+    acceptance_criteria:
+      - "Page loads, demo data auto-loads from data/demo-data.json on first open"
+      - "Mobile (375px) and desktop (900px) container widths behave correctly"
+      - "No console errors on load"
+    placeholder_message: "🚧 Setting up the page shell — Quick Add and Recent Entries coming next!"
+    status: "complete"
+
+  - id: "section-2"
+    name: "Quick Add Box"
+    scope: "Amount input, 4 preset category buttons (single-select toggle), custom category input (case-insensitive merge on submit), Add Expense button (disabled until amount>0 and category set); mobile stacked / desktop two-column layout"
+    files_affected: ["1.1-home.html"]
+    dependencies: []
+    object_ids:
+      - "home-quickadd"
+      - "home-quickadd-amount-input"
+      - "home-quickadd-category-food"
+      - "home-quickadd-category-transport"
+      - "home-quickadd-category-shopping"
+      - "home-quickadd-category-other"
+      - "home-quickadd-category-custom-input"
+      - "home-quickadd-submit"
+    tailwind_classes:
+      - "Card: bg-white rounded-lg p-[space-md] gap-[space-sm]"
+      - "Category buttons: flex flex-wrap gap-[space-xs], md:flex-nowrap"
+      - "Primary button: bg-tracker-600 disabled:bg-gray-300"
+    acceptance_criteria:
+      - "Add Expense stays disabled until amount > 0 AND category set"
+      - "Typing a custom category matching an existing one (any case) reuses it, not a duplicate, on submit"
+      - "Mobile: category buttons wrap to 2 rows; Desktop: single row, all 4 fit"
+      - "Tapping Add Expense opens the Confirm Popup with the entered values"
+    placeholder_message: "🚧 Building Recent Entries next!"
+    status: "complete"
+
+  - id: "section-3"
+    name: "Recent Entries List"
+    scope: "Heading, count selector (5/10/20, default 10), entry rows (amount + category, tappable), Loading (skeleton) / Empty (\"No entries yet this month\") / Error (inline + retry) states"
+    files_affected: ["1.1-home.html"]
+    dependencies: []
+    object_ids:
+      - "home-recent"
+      - "home-recent-heading"
+      - "home-recent-count-selector"
+      - "home-recent-entry-row"
+    tailwind_classes:
+      - "List container: bg-white rounded-lg p-[space-md] gap-[space-xs]"
+      - "Row: flex justify-between py-[space-xs]"
+    acceptance_criteria:
+      - "Count selector limits visible rows to 5/10/20"
+      - "Empty state shows centered message, no CTA, when no entries exist for current month"
+      - "Loading state shows skeleton rows without blocking Quick Add usability"
+      - "Error state shows inline error + Retry without blocking Quick Add"
+    placeholder_message: "🚧 Building the Confirm Popup next!"
+    status: "complete"
+
+  - id: "section-4"
+    name: "Confirm Popup / Overlay"
+    scope: "Overlay — Centered Dialog variant; title, tap-to-edit-inline Amount/Category fields (pencil icon affixed), Cancel/Confirm actions; Default/Editing/Saving (inline spinner)/Error states"
+    files_affected: ["1.1-home.html"]
+    dependencies: ["components/modal.js"]
+    object_ids:
+      - "home-confirm-popup"
+      - "home-confirm-title"
+      - "home-confirm-amount"
+      - "home-confirm-category"
+      - "home-confirm-cancel"
+      - "home-confirm-submit"
+    tailwind_classes:
+      - "Scrim: fixed inset-0 bg-black/40"
+      - "Dialog: max-w-[360px] bg-white rounded-lg p-[space-lg] gap-[space-md]"
+    acceptance_criteria:
+      - "Cancel closes popup, returns to Home with amount/category still filled (not cleared)"
+      - "Tapping Amount or Category field enters inline edit mode without closing the popup"
+      - "Confirm shows inline spinner replacing its label while saving (no separate overlay)"
+      - "Save is pessimistic — 1.3 toast only appears after save resolves"
+    placeholder_message: "🚧 Wiring up the save flow and toast next!"
+    status: "complete"
+
+  - id: "section-5"
+    name: "Save Flow & Toast"
+    scope: "Pessimistic save via PrototypeAPI (simulated), toast on success (\"{amount} added to {category}\", top-right, ~2.5s auto-dismiss), toast stacking for rapid saves, new-entry row highlight (fades with its toast), Quick Add reset to idle, new entry inserted at top of Recent Entries"
+    files_affected: ["1.1-home.html"]
+    dependencies: ["components/toast.js", "shared/prototype-api.js"]
+    object_ids:
+      - "home-toast"
+      - "home-toast-message"
+    tailwind_classes:
+      - "Toast: fixed top-[space-md] right-[space-md] bg-success-500 text-white rounded-md px-[space-md] py-[space-sm]"
+      - "New-row highlight: outline outline-2 outline-success-500, transition-opacity"
+    acceptance_criteria:
+      - "Successful Confirm closes popup, resets Quick Add, shows toast, adds entry to top of list"
+      - "Two saves within ~2.5s stack toasts vertically, most recent on top, independent timers"
+      - "New-entry row highlight fades on the same timer as its toast, not separately tracked"
+    placeholder_message: "🚧 Validating responsive layout next!"
+    status: "complete"
+
+  - id: "section-6"
+    name: "Responsive Diff Validation"
+    scope: "Verify mobile (375px, stacked) and desktop (900px, two-column Quick Add left / Recent Entries right) layouts exactly match the Responsive Diff sections in 1.1/1.2/1.3 specs"
+    files_affected: ["1.1-home.html"]
+    dependencies: []
+    object_ids: []
+    tailwind_classes:
+      - "md:flex md:flex-row md:gap-[space-xl] (desktop two-column)"
+    acceptance_criteria:
+      - "375px viewport matches 1.1/1.2/1.3 mobile Layout Structure exactly"
+      - "900px viewport matches 1.1/1.2/1.3 Responsive Diff exactly"
+      - "No horizontal scroll at either breakpoint"
+    placeholder_message: "🚧 Final polish pass next!"
+    status: "complete"
+
+  - id: "section-7"
+    name: "Final Integration Polish"
+    scope: "Cross-state consistency pass (idle → confirm → saved loop, repeated), edge cases (empty state on first load, month-boundary entries from demo data, duplicate custom category typed twice)"
+    files_affected: ["1.1-home.html"]
+    dependencies: []
+    object_ids: []
+    tailwind_classes: []
+    acceptance_criteria:
+      - "Full loop (log → confirm → save → toast) can be repeated multiple times without state leaking between runs"
+      - "Typing an existing category name (different case) in the custom field reuses it, doesn't create a duplicate button/entry"
+      - "No console errors across the full interaction loop"
+    placeholder_message: "✅ Prototype complete — ready for review!"
+    status: "complete"
+
+# ============================================================================
+# JAVASCRIPT REQUIREMENTS
+# ============================================================================
+
+javascript_functions:
+  initialization:
+    - "initPage() - loads demo data, renders Recent Entries, resets Quick Add to idle"
+
+  form_handling:
+    - "handleCategorySelect(category) - selects preset, deselects others/custom"
+    - "handleCustomCategoryInput(value) - sets custom category, case-insensitive merge check"
+    - "validateQuickAdd() - amount > 0 AND category set, toggles submit disabled state"
+    - "handleAddExpense() - opens Confirm Popup with current amount/category"
+
+  popup_handling:
+    - "openConfirmPopup(amount, category)"
+    - "handleInlineEdit(field) - enters edit mode for amount or category within popup"
+    - "handleCancel() - closes popup, Home retains filled amount/category"
+    - "handleConfirmSave() - pessimistic save via PrototypeAPI, shows Saving state, then toast + list update"
+
+  ui_interactions:
+    - "handleCountSelectorChange(count) - limits visible Recent Entries rows"
+    - "showToast(message) - stacking, independent ~2.5s auto-dismiss timers"
+
+  api_calls:
+    - "PrototypeAPI.getEntries()"
+    - "PrototypeAPI.addEntry({ amount, category })"
+
+  feedback:
+    - "showToast(message, type)"
+    - "setSavingState(isSaving)"
+    - "highlightNewRow(entryId)"
+
+# ============================================================================
+# NAVIGATION
+# ============================================================================
+
+navigation:
+  previous_page: null
+  next_page_success: null  # No navigation — scenario is self-contained (log → confirm → saved, same view)
+  next_page_cancel: null
+
+# ============================================================================
+# TESTING CHECKLIST (after all sections complete)
+# ============================================================================
+
+testing_checklist:
+  functionality:
+    - "[ ] Amount + category entry works, Add Expense enables/disables correctly"
+    - "[ ] Confirm Popup shows correct summary, tap-to-edit-inline works for both fields"
+    - "[ ] Cancel returns to Home with fields filled (not cleared)"
+    - "[ ] Confirm saves (pessimistic), shows Saving spinner, then toast + list update"
+    - "[ ] Custom category case-insensitive merge works, no duplicates"
+    - "[ ] Toast stacking works for rapid multi-entry logging"
+    - "[ ] Count selector (5/10/20) limits Recent Entries correctly"
+    - "[ ] Empty state shows when no entries exist"
+    - "[ ] Data persists across reload (sessionStorage)"
+
+  mobile_testing:
+    - "[ ] 375px viewport matches spec Layout Structure"
+    - "[ ] All tap targets min 44x44px"
+    - "[ ] Text is readable (min 16px body)"
+    - "[ ] No horizontal scroll"
+    - "[ ] Category buttons wrap to 2 rows on mobile"
+
+  desktop_testing:
+    - "[ ] 900px viewport matches spec Responsive Diff (two-column)"
+    - "[ ] All 4 category buttons fit one row"
+    - "[ ] Confirm Popup centers correctly over two-column layout"
+
+  code_quality:
+    - "[ ] All Object IDs present and correctly named"
+    - "[ ] No console errors"
+    - "[ ] Tailwind classes use design-token values (spacing/type scale), no raw px"
+    - "[ ] Functions documented where non-obvious"
+
+  accessibility:
+    - "[ ] Keyboard navigation works (tab through Quick Add, popup)"
+    - "[ ] Form labels present"
+    - "[ ] Focus states visible"
+    - "[ ] Popup traps focus while open"
+
+# ============================================================================
+# MIGRATION NOTES (for production)
+# ============================================================================
+
+migration_todos:
+  - "Replace PrototypeAPI.getEntries()/addEntry() with real .NET Core backend calls"
+  - "Replace sessionStorage persistence with actual database persistence"
+  - "Confirm authentication scope before backend design (flagged as open in DD-001-handoff-log.md — current assumption: single-user, no login)"
+
+# ============================================================================
+# KNOWN ISSUES / EDGE CASES
+# ============================================================================
+
+edge_cases:
+  - "Month-boundary entries (entry-001 from June 30 in demo data) — Recent Entries here is not month-filtered per spec (that's Monthly Breakdown's job), so it should still appear in Home's list"
+  - "Distraction/silent-loss during entry (partial input persistence) is explicitly deferred per spec — no handling needed for v1"
+  - "No cap on distinct custom categories for v1 — audience-of-one scope"
+
+# ============================================================================
+# COMPLETION CRITERIA
+# ============================================================================
+
+definition_of_done:
+  - "All 7 sections implemented and tested"
+  - "All object IDs present and correct"
+  - "All acceptance criteria met per section"
+  - "No console errors"
+  - "Mobile (375px) and desktop (900px) both match spec exactly"
+  - "Demo data loads automatically"
+  - "Full log → confirm → save loop works repeatably"
+  - "Story files document all 7 sections"

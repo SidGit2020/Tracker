@@ -1,0 +1,24 @@
+{
+  "user": {
+    "id": "demo-user-siddi",
+    "firstName": "Siddi",
+    "lastName": "",
+    "email": "siddi@example.com"
+  },
+  "categories": {
+    "presets": ["Food", "Transport", "Shopping", "Other"],
+    "custom": ["Books"]
+  },
+  "entries": [
+    { "id": "entry-009", "amount": 45, "category": "Food", "createdAt": "2026-07-02T08:12:00.000Z" },
+    { "id": "entry-008", "amount": 320, "category": "Transport", "createdAt": "2026-07-01T18:40:00.000Z" },
+    { "id": "entry-007", "amount": 150, "category": "Food", "createdAt": "2026-07-01T13:05:00.000Z" },
+    { "id": "entry-006", "amount": 899, "category": "Books", "createdAt": "2026-07-01T10:22:00.000Z" },
+    { "id": "entry-005", "amount": 1250, "category": "Shopping", "createdAt": "2026-06-30T19:15:00.000Z" },
+    { "id": "entry-004", "amount": 60, "category": "Transport", "createdAt": "2026-06-30T14:30:00.000Z" },
+    { "id": "entry-003", "amount": 220, "category": "Food", "createdAt": "2026-06-30T09:50:00.000Z" },
+    { "id": "entry-002", "amount": 500, "category": "Other", "createdAt": "2026-06-30T08:05:00.000Z" },
+    { "id": "entry-001", "amount": 90, "category": "Food", "createdAt": "2026-06-29T21:00:00.000Z" }
+  ],
+  "comment": "Demo data for Scenario 01 (Siddi Logs an Expense) prototype. Deliberately no entry is dated 'today' — the newest seed entry is a full day back — so a newly-saved entry (real-time timestamp) always sorts to the top of Recent Entries regardless of what time of day it's tested. entry-001 exists so the month boundary can be spot-checked. This file mirrors data/demo-data.js, which is what actually loads (see that file's header comment for why). Edit either freely — no backend, purely for prototype testing."
+}
