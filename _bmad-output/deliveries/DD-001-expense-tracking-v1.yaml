@@ -1,0 +1,106 @@
+delivery:
+  id: DD-001
+  name: Expense Tracking v1 (Log + Review)
+  status: ready_for_handoff
+  created: '2026-07-03'
+  designer: SIDDI
+
+user_value:
+  problem: >
+    The founder senses he's overspending somewhere but has no consistent tracking today —
+    just a vague, unconfirmed feeling. Mental estimation breaks down as spending grows and
+    diversifies across categories and payment methods.
+  solution: >
+    A two-scenario flow: (1) a zero-friction quick-add box on Home for logging an expense
+    in a couple of taps the moment it happens, and (2) a Monthly Category Breakdown page
+    with a bar chart + drill-down that turns the vague feeling into a specific, trustworthy
+    number, checked in on roughly monthly.
+  success_criteria:
+    - Still actively logging expenses at day 14 post-launch (primary product success metric —
+      the real test of whether the quick-add design solved the "forgetting to log" abandonment risk)
+    - Ship v1 within the self-imposed weekend-scale build window
+    - Entry via the quick-add box feels sub-few-second, no perceived lag
+
+design_artifacts:
+  scenarios:
+    - id: 01-siddi-logs-an-expense
+      pages: [1.1-home, 1.2-home, 1.3-home]
+      path: C-UX-Scenarios/01-siddi-logs-an-expense/
+    - id: 02-siddi-reviews-the-month
+      pages: [2.1-monthly-breakdown, 2.2-monthly-breakdown]
+      path: C-UX-Scenarios/02-siddi-reviews-the-month/
+  design_system_components:
+    - name: Overlay
+      variants: [Centered Dialog, Drawer / Sheet]
+      used_by: [home-confirm-popup (1.2), breakdown-drilldown-panel (2.2)]
+    - name: Spacing Scale
+      tokens: 'space-3xs (2px) through space-3xl (64px)'
+    - name: Type Scale
+      tokens: 'text-xs (12px) through text-3xl (30px)'
+    - name: Breakpoints
+      tokens: 'bp-mobile (<640px, 375px ref), bp-desktop (>=640px, 900px ref)'
+  patterns_not_yet_extracted:
+    - Toast Notification (single use, 1.3)
+    - Horizontal Bar Chart (single use, 2.1)
+
+technical_requirements:
+  platform: 'Responsive web application — .NET Core backend + Angular frontend'
+  supported_devices: 'Desktop and mobile browsers, equal priority (no dedicated native app)'
+  interaction_models: ['Touch (mobile)', 'Mouse/keyboard (desktop)']
+  offline_support: 'Not required for v1'
+  hosting: 'Free-tier / zero-cost — no budget for paid infrastructure'
+  authentication: >
+    NOT SPECIFIED in any upstream design artifact (Product Brief, scenarios, or page specs).
+    Product is audience-of-one with no Business Model (free, personal, non-commercial).
+    ASSUMPTION FOR MIMIR BUILDER TO CONFIRM: single-user app, no login/auth screens in scope —
+    flag before backend design if this assumption is wrong.
+  integrations: 'None — no bank-linking, no SMS parsing, no third-party APIs (deliberate trust/ownership choice per Product Brief)'
+  data_models:
+    - entity: Expense Entry
+      fields:
+        - 'id (system-generated)'
+        - 'amount (numeric, > 0, required)'
+        - 'category (string — one of 4 presets [Food/Transport/Shopping/Other] or a custom value)'
+        - 'timestamp (system-generated at save time)'
+      derived: 'Month grouping for 2.1/2.2 is derived from timestamp, not stored separately'
+      notes: >
+        Custom category matching is case-insensitive against presets + all previously used
+        custom values at submit time (merges into existing category, no duplicate created —
+        see 1.1-home.md Open Questions). No cap on distinct custom categories for v1.
+  performance:
+    - 'Quick-add flow (1.1 -> 1.2 -> 1.3) should feel sub-few-second, no perceptible lag on category/amount entry'
+    - 'Confirm save (1.2) is pessimistic — UI waits for confirmed save before transitioning to 1.3, not optimistic'
+
+acceptance_criteria:
+  functional:
+    - 'Amount + category (preset or custom) required before "Add Expense" is enabled (1.1)'
+    - 'Confirm popup shows entry summary with tap-to-edit-inline on both fields before save (1.2)'
+    - 'Cancel on the confirm popup returns to 1.1 with fields still filled, not cleared (1.2)'
+    - 'Successful save shows a toast ("{amount} added to {category}") and the new entry appears at the top of Recent Entries (1.3)'
+    - 'Monthly Category Breakdown shows a headline total + per-category horizontal bar chart, sorted largest to smallest, for the selected month (2.1)'
+    - 'Month selector defaults to current month; prev/next step one month, bounded by the earliest month with any recorded data through the current month (2.1)'
+    - 'Tapping a category bar opens a read-only drill-down panel listing that category''s transactions, most-recent-first (2.2)'
+  non_functional:
+    - 'Responsive: mobile and desktop layouts both fully specified and equally supported (see each page''s Responsive Diff section)'
+    - 'Tone of voice: plain, neutral/non-judgmental, unobtrusive, precise — no celebratory copy, no scolding about amounts (see Product Brief Tone of Voice)'
+  edge_cases:
+    - 'Empty state: no entries yet this month (Home) / no entries for selected month (Breakdown) — plain text, no CTA on Breakdown'
+    - 'Duplicate custom category (case-insensitive match) merges into the existing category, does not create a duplicate'
+    - 'Multiple rapid entries: toasts stack vertically, most recent on top, each dismissing independently (~2.5s timer each)'
+    - 'Save failure on Confirm: inline error in the popup, entry data preserved, Retry re-attempts the same save'
+    - 'Recent Entries / Transaction list load failure: inline error + Retry, does not block the rest of the page'
+
+testing_guidance:
+  user_testing: 'Single-user validation by the founder himself — primary signal is whether logging actually continues past day 14, not a formal usability study'
+  qa_scope: 'Modern evergreen browsers, mobile + desktop viewports at minimum bp-mobile (375px) and bp-desktop (900px) reference widths'
+  design_validation: 'Verify implementation against each page spec''s Page Sections (Object IDs), Page States, and Responsive Diff sections — see test-scenarios/TS-001-expense-tracking-v1.yaml for the structured checklist'
+
+complexity:
+  size: 'S/M — 5 page states across 2 scenarios, 1 shared component (Overlay), simple single-entity CRUD'
+  effort: 'Fits within the self-imposed weekend-scale build window per Product Brief'
+  dependencies: 'None external — zero-cost hosting only, no third-party integrations'
+  assumptions:
+    - 'No authentication/login in scope (see technical_requirements.authentication — confirm before backend design)'
+    - 'No analytics/telemetry infrastructure (Product Brief: "manual, honest self-check")'
+    - 'No PWA/offline caching required for v1'
+  risk: 'Low — scope is fixed and locked from the forged-idea scope doc, tech stack (.NET Core + Angular) already settled, no hard unknowns identified in the Product Brief'

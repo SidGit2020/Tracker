@@ -1,0 +1,108 @@
+test_scenario:
+  id: TS-001
+  delivery_id: DD-001
+  name: Expense Tracking v1 — Validation
+  status: draft
+  created: '2026-07-03'
+  objective: >
+    Validate that the implemented Log-an-Expense and Review-the-Month flows match the
+    approved page specifications and deliver the Product Brief's core promise: sub-few-second
+    logging and a trustworthy, verifiable monthly number.
+
+happy_path_tests:
+  - name: Log a new expense end to end
+    steps:
+      - 'Open Home (1.1), enter an amount, tap a preset category (e.g. Food)'
+      - 'Tap "Add Expense"'
+      - 'Confirm popup opens showing the entered amount + category (1.2)'
+      - 'Tap "Confirm"'
+    expected_result: >
+      Popup closes, a toast reads "{amount} added to {category}" top-right and auto-dismisses
+      after ~2.5s, the new entry appears at the top of Recent Entries (1.3), quick-add fields
+      reset to empty/idle.
+    design_reference: 'C-UX-Scenarios/01-siddi-logs-an-expense/1.1-home/, 1.2-home/, 1.3-home/'
+
+  - name: Log an expense with a custom category
+    steps:
+      - 'On Home, enter an amount, type a new category name in "+ Type a new category"'
+      - 'Tap "Add Expense", then Confirm'
+    expected_result: 'Entry saves with the custom category exactly as typed; category becomes available for future reuse/matching.'
+    design_reference: 'C-UX-Scenarios/01-siddi-logs-an-expense/1.1-home/1.1-home.md'
+
+  - name: Edit inline before confirming
+    steps:
+      - 'Open the confirm popup (1.2), tap the Amount field, change the value'
+      - 'Tap Confirm'
+    expected_result: 'Entry saves with the edited amount, not the original.'
+    design_reference: 'C-UX-Scenarios/01-siddi-logs-an-expense/1.2-home/1.2-home.md'
+
+  - name: Review the month and spot-check a category
+    steps:
+      - 'Open Monthly Category Breakdown (2.1) — defaults to current month'
+      - 'Observe headline total + per-category bar chart, sorted largest to smallest'
+      - 'Tap a category bar (e.g. Food)'
+    expected_result: >
+      Drill-down panel opens (2.2) showing that category's transactions, date + amount,
+      sorted most-recent-first, read-only. Total on 2.1 matches the sum of listed transactions.
+    design_reference: 'C-UX-Scenarios/02-siddi-reviews-the-month/2.1-monthly-breakdown/, 2.2-monthly-breakdown/'
+
+  - name: Browse to a previous month
+    steps:
+      - 'On 2.1, tap the prev (‹) arrow on the month selector'
+    expected_result: 'Chart and total update to the previous month''s data; prev arrow disables once the earliest month with data is reached; next arrow disables at the current month.'
+    design_reference: 'C-UX-Scenarios/02-siddi-reviews-the-month/2.1-monthly-breakdown/2.1-monthly-breakdown.md'
+
+error_state_tests:
+  - trigger: 'Confirm save fails (e.g. network error) on 1.2'
+    expected_error_message: 'Inline error message within the popup (exact copy TBD by Mimir Builder — must follow Tone of Voice: plain, instructional, no fluff)'
+    recovery_path: 'Entry data (amount/category) is preserved; re-tapping Confirm retries the same save'
+    graceful_degradation: 'Home (1.1) Quick Add remains usable even if the Recent Entries list fails to load — logging is never blocked by a display-only list failure'
+
+  - trigger: 'Recent Entries (1.1/1.3) or Transaction list (2.2) fails to load'
+    expected_error_message: 'Inline error + Retry, scoped to the failed section only'
+    recovery_path: 'Retry re-attempts the fetch; rest of the page stays interactive'
+    graceful_degradation: 'Month selector (2.1) remains usable even if the current month''s data fails to load'
+
+edge_case_tests:
+  - case: 'Empty state — no entries yet this month (Home)'
+    expected_behavior: 'Recent Entries area shows "No entries yet this month"; Quick Add remains fully usable'
+  - case: 'Empty state — selected month has zero entries (Breakdown)'
+    expected_behavior: 'Chart area shows centered "No entries for {Month} {Year}", no CTA (logging isn''t done from this page)'
+  - case: 'Duplicate custom category (case-insensitive)'
+    expected_behavior: 'Typing a category name matching an existing one (any case) merges into that category — does not create a second, separately-tracked category'
+  - case: 'Rapid multiple entries (2+ within a few seconds)'
+    expected_behavior: 'Toasts stack vertically, most recent on top; each dismisses independently on its own ~2.5s timer; corresponding row highlights fade with their own toast'
+  - case: 'Month selector at data boundaries'
+    expected_behavior: 'Prev arrow disabled at the earliest month with any recorded data; next arrow disabled at the current month (no future months browsable)'
+  - case: 'Viewport at/near the bp-mobile / bp-desktop boundary (640px)'
+    expected_behavior: 'Layout switches cleanly between the mobile and desktop Responsive Diff specs for each page — no broken intermediate state'
+
+design_system_validation:
+  components_to_validate:
+    - 'Overlay — Centered Dialog variant (1.2 home-confirm-popup): centered, fixed max-width (~360px), scrim background, space-lg padding, space-md element gap'
+    - 'Overlay — Drawer / Sheet variant (2.2 breakdown-drilldown-panel): desktop right-side drawer / mobile full-screen sheet, same content and Object IDs across both'
+  token_verification:
+    - 'Spacing matches D-Design-System/00-design-system.md Spacing Scale tokens (space-3xs through space-3xl) — no raw px values in implementation that skip the scale'
+    - 'Typography matches Type Scale tokens (text-xs through text-3xl) — sizes/weights per each page spec''s Typography table'
+    - 'Breakpoint switch happens at bp-desktop (640px), matching D-Design-System/00-design-system.md Breakpoints'
+  component_usage_check: 'Confirm no third overlay instance appeared undocumented during implementation (if one did, flag for Design System re-extraction — see D-Design-System/00-design-system.md Overlay "revisit if a third instance" note)'
+
+accessibility_tests:
+  screen_reader: 'All Object IDs with text content (amounts, categories, dates, toast messages) are readable in logical order; category/close/action buttons have accessible labels'
+  color_contrast: 'Meets WCAG AA — 4.5:1 for body text (text-sm/text-md), 3:1 for large text (text-2xl/text-3xl headline total)'
+  touch_targets: 'All tappable elements (category buttons, Add Expense, Confirm/Cancel, category bars, close ×) are minimum 44x44px on mobile'
+  keyboard_navigation: 'All interactive elements (amount input, category buttons, custom category field, Add Expense, popup fields/actions, month selector, category bars, drill-down close) reachable via Tab, operable via Enter/Space'
+
+sign_off_criteria:
+  pass_threshold: 'All happy-path and error-state tests pass; all edge cases behave as specified'
+  must_fix:
+    - 'Any broken happy-path flow (cannot log an expense end to end, or cannot review + drill down into a category)'
+    - 'Accessibility failures (contrast, touch target size, keyboard trap)'
+    - 'Data integrity issues (amount/category saved incorrectly, duplicate categories created despite matching logic)'
+  nice_to_fix:
+    - 'Minor visual/spacing deviations from the design system tokens that don''t affect usability'
+    - 'Toast stacking animation polish'
+  approval_process: >
+    Single approver — SIDDI (designer and sole user/stakeholder). Manual walkthrough of all
+    happy-path tests plus a spot-check of edge cases is sufficient sign-off; no separate QA
+    team given audience-of-one scope.

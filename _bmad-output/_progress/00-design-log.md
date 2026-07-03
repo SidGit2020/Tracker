@@ -13,6 +13,13 @@
 - [x] Complete product brief — Phase 1
 - [x] Define trigger map — Phase 2
 - [x] Create user scenarios — Phase 3
+- [x] Discuss + wireframe all pages — Phase 4
+- [x] Write detailed specifications, all 5 pages — Phase 4
+- [x] Resolve flagged open items (see 2026-07-02 log entry): 1.2 Edit-button redundancy, 2.1 month-selector range + empty-month state, 2.2 read-only-panel-to-Home link + mobile drawer equivalent, 1.1 duplicate/max custom category
+- [x] Responsive diffs — desktop for Scenario 01 (currently mobile-only), mobile for Scenario 02 (currently desktop-only)
+- [x] Validate Specs [V] — completeness/quality audit
+- [x] Design System extraction [M] — modal pattern extracted as the `Overlay` component (2 uses: 1.2, 2.2)
+- [x] Design Delivery [H] — package for dev handoff (before Phase 5)
 
 ---
 
@@ -20,7 +27,6 @@
 
 | Task | Started | Agent |
 |------|---------|-------|
-| UX Scenarios (Phase 3) — complete, ready for Phase 4 | 2026-07-02 | — |
 
 **Rules:** Mark what you start. Complete it when done (move to Log). One task at a time per agent.
 
@@ -32,6 +38,21 @@
 
 | Scenario | Step | Page | Status | Updated |
 |----------|------|------|--------|---------|
+| 01-siddi-logs-an-expense | 1.1 | Home / Log Screen | discussed | 2026-07-02 |
+| 01-siddi-logs-an-expense | 1.1 | Home / Log Screen | wireframed | 2026-07-02 |
+| 01-siddi-logs-an-expense | 1.2 | Home / Log Screen (confirm popup) | discussed | 2026-07-02 |
+| 01-siddi-logs-an-expense | 1.2 | Home / Log Screen (confirm popup) | wireframed | 2026-07-02 |
+| 01-siddi-logs-an-expense | 1.3 | Home / Log Screen (toast + updated list) | discussed | 2026-07-02 |
+| 01-siddi-logs-an-expense | 1.3 | Home / Log Screen (toast + updated list) | wireframed | 2026-07-02 |
+| 02-siddi-reviews-the-month | 2.1 | Monthly Category Breakdown | discussed | 2026-07-02 |
+| 02-siddi-reviews-the-month | 2.1 | Monthly Category Breakdown | wireframed | 2026-07-02 |
+| 02-siddi-reviews-the-month | 2.2 | Monthly Category Breakdown (category drill-down panel) | discussed | 2026-07-02 |
+| 02-siddi-reviews-the-month | 2.2 | Monthly Category Breakdown (category drill-down panel) | wireframed | 2026-07-02 |
+| 01-siddi-logs-an-expense | 1.1 | Home / Log Screen | specified | 2026-07-02 |
+| 01-siddi-logs-an-expense | 1.2 | Home / Log Screen (confirm popup) | specified | 2026-07-02 |
+| 01-siddi-logs-an-expense | 1.3 | Home / Log Screen (toast + updated list) | specified | 2026-07-02 |
+| 02-siddi-reviews-the-month | 2.1 | Monthly Category Breakdown | specified | 2026-07-02 |
+| 02-siddi-reviews-the-month | 2.2 | Monthly Category Breakdown (category drill-down panel) | specified | 2026-07-02 |
 
 **Status values:** `discussed` → `wireframed` → `specified` → `explored` → `building` → `built` → `approved` | `removed`
 
@@ -95,6 +116,183 @@
 **Design Intent:** Both scenarios set to `design_intent: L` (Later) — approach to be chosen when Phase 4 starts
 
 **Next:** Phase 4 — UX Design
+
+---
+
+### 2026-07-02 — Scenario 01 (Home / Log Screen) fully designed — Discuss + Wireframe (Phase 4)
+
+**Agent:** Freya (Discuss [C] mode)
+**Pages:** 1.1 (idle/ready), 1.2 (confirm popup), 1.3 (toast + updated list) — all discussed, wireframed, and spec-synced
+
+**Key decisions made during discussion:**
+- **No running month total on Home** — reserved for the Monthly Category Breakdown page (scenario 02) only. This changed 1.3's original Phase 3 purpose ("total updates immediately"), which no longer applies — replaced with a toast confirmation ("₹150 added to Food", top-right, auto-dismiss).
+- **Categories:** fixed preset buttons (Food/Transport/Shopping/Other) + custom category via inline text field.
+- **1.2 confirm popup, deliberate speed/accuracy tradeoff:** considered auto-submit on category tap (fastest, matches the 15/15 speed-of-logging trigger map score) but chose an explicit Confirm/Cancel/Edit popup instead, trading a small amount of speed for pre-save accuracy confidence — a considered decision, not a default. Edit adjusts amount/category inline within the popup, no separate screen.
+- **Distraction/silent-loss worry** (Q4 fear on 1.1) explicitly deferred — no partial-input persistence for v1, flagged as a v2+ candidate.
+- **Recent entries list:** shows amount + category, with a user-selectable count control; infinite scroll deferred to a later version.
+
+**Open item flagged for specification stage:** does Cancel (on the 1.2 popup) discard the entry and return to Home's empty idle state, or return to Home with the amount/category still filled?
+
+**Artifacts updated:**
+- `C-UX-Scenarios/01-siddi-logs-an-expense/1.1-home/1.1-home.md` — Design Dialog Findings + Visual Reference
+- `C-UX-Scenarios/01-siddi-logs-an-expense/1.2-home/1.2-home.md` — Design Dialog Findings + Visual Reference
+- `C-UX-Scenarios/01-siddi-logs-an-expense/1.3-home/1.3-home.md` — Design Dialog Findings + Visual Reference (page purpose revised)
+- Wireframes + approved PNGs in each page's `Sketches/` folder
+
+**Next:** Detailed specification for 1.1–1.3 (steps-p/), or move to Scenario 02 (Monthly Category Breakdown)
+
+---
+
+### 2026-07-02 — Scenario 02 (Monthly Category Breakdown) fully designed — Discuss + Wireframe (Phase 4)
+
+**Agent:** Freya (Discuss [C] mode)
+**Pages:** 2.1 (chart + total, desktop base), 2.2 (category drill-down panel) — all discussed, wireframed, and spec-synced
+
+**Key decisions made during discussion:**
+- **Running month total now lives here** — headline "Total Spent This Month" number at the top of 2.1, completing the move away from Home decided in Scenario 01.
+- **Per-category totals shown as a bar chart**, not a plain list — sorted largest to smallest, for genuine "at a glance" comparison.
+- **Month selector added to scope** (dropdown/arrows, defaults to current month) — browsing past months was folded into the core page during the D2 challenge, not treated as a v2 addition.
+- **Base viewport is desktop** (900×480) — this scenario has equal mobile/desktop priority (unlike Scenario 01's mobile-first), so desktop was chosen as the base and mobile will be explored as a responsive diff.
+- **2.2 is a drill-down panel on 2.1, not a separate page** — tapping a category bar opens a right-side drawer with that category's transactions (date + amount, read-only). This is the **second use of the modal/popup pattern** in the project (first was 1.2's confirm popup) — flagged as a design-system candidate if a third instance appears.
+- **The "is this a bug?" worry from 2.1 is deliberately resolved here**, not on 2.1 itself — seeing the actual line items is what lets Siddi verify the total against memory.
+
+**Artifacts updated:**
+- `C-UX-Scenarios/02-siddi-reviews-the-month/2.1-monthly-breakdown/2.1-monthly-breakdown.md` — Design Dialog Findings + Visual Reference
+- `C-UX-Scenarios/02-siddi-reviews-the-month/2.2-monthly-breakdown/2.2-monthly-breakdown.md` — Design Dialog Findings + Visual Reference
+- Wireframes + approved PNGs in each page's `Sketches/` folder
+
+**Both scenarios (01 and 02) are now fully discussed and wireframed — all 5 pages/states in the project have an agreed visual reference.**
+
+**Next:** Detailed specification (steps-p/) for any/all pages, responsive diffs (mobile for Scenario 02, desktop for Scenario 01), or Design System extraction now that the modal pattern has appeared twice
+
+---
+
+### 2026-07-02 — All 5 pages fully specified — Suggest mode (Phase 4)
+
+**Agent:** Freya (Suggest mode, per user request to move quickly through specification)
+**Pages:** 1.1, 1.2, 1.3, 2.1, 2.2 — all now have full specs (layout structure, spacing/typography tokens, Object IDs, page states, technical notes, open questions)
+
+**Design System established:**
+- `D-Design-System/00-design-system.md` created — WDS default spacing scale (space-3xs 2px → space-3xl 64px) and a 7-step type scale (text-xs 12px → text-3xl 30px), confirmed by user as-is
+- Patterns section tracks the modal/popup pattern (2 uses so far: 1.2, 2.2) — not yet extracted to a shared component, revisit if a third instance appears
+
+**Wireframe amendment during specification:**
+- **1.1 gap found and fixed:** the approved 1.1 wireframe had no explicit submit trigger, but the 1.2 discussion had decided category-tap should NOT auto-submit ("keep it separate to avoid confusion"). Added an **"Add Expense" button** to 1.1 (disabled until amount + category are valid) as the actual trigger into the 1.2 popup. Wireframe regenerated and re-approved by user.
+
+**Decisions made resolving prior open items:**
+- **1.2 Cancel behavior (previously open):** resolved as returning to 1.1 with amount/category still filled, not cleared — reasoning: Siddi tapped "Add Expense" on purpose, so Cancel likely means "let me adjust," not "start over."
+- **1.2 save behavior:** decided pessimistic save (wait for confirmed save before showing 1.3) over optimistic — trust in the number outweighs a faster perceived transition.
+
+**New open items flagged (not yet resolved, need user input before build):**
+- 1.2: Edit button vs. inline tap-to-edit may be redundant — kept both for now, flagged for review
+- 1.1/2.1: desktop responsive diff for Scenario 01, mobile responsive diff for Scenario 02 — neither explored yet
+- 2.1: month selector range (how far back?), empty-month state design
+- 2.2: whether the read-only drill-down panel should link back to Home to fix a spotted error; mobile equivalent of the right-side drawer; transaction sort order
+- 1.1: duplicate/max custom category handling
+
+**Artifacts updated:** all 5 page spec files (`1.1-home.md`, `1.2-home.md`, `1.3-home.md`, `2.1-monthly-breakdown.md`, `2.2-monthly-breakdown.md`) — each now has Layout Structure, Spacing, Typography, Page Sections (with Object IDs), Page States, Technical Notes, Open Questions, and Checklist sections in addition to the existing Design Dialog Findings and Visual Reference.
+
+**Next:** Resolve the flagged open items above, do the responsive diffs, or move to Phase 5 (Agentic Development) once open items are cleared
+
+---
+
+### 2026-07-03 — All flagged open items resolved (Phase 4)
+
+**Agent:** Freya (Suggest mode — proposed resolutions batch-confirmed by user)
+**Pages touched:** 1.1, 1.2, 1.3, 2.1, 2.2 — all `Open Questions` tables now fully 🟢 Resolved except the 3 mobile/desktop layout items, which map to the Responsive Diffs backlog item instead
+
+**Decisions made:**
+- **1.1** — Custom category matching is case-insensitive against presets + prior custom values (merges, no duplicates); no cap on distinct custom categories for v1.
+- **1.2** — Cut the standalone Edit button (redundant with tap-to-edit-inline); discoverability now handled by a pencil icon on the Amount/Category fields. Saving state finalized as an inline spinner replacing the Confirm label, no separate overlay.
+- **1.3** — Toast and new-entry row highlight dismiss together on one ~2.5s timer (no separate coordination). Rapid multiple entries stack toasts vertically (most recent on top), each with its own independent timer.
+- **2.1** — Month selector range is data-driven: bounded by the earliest month with any recorded entry, not a fixed lookback limit. Empty-month state finalized as centered "No entries for {Month} {Year}", no CTA.
+- **2.2** — Confirmed the read-only drill-down panel does **not** link back to Home to edit (stays read-only for v1, formalizing the existing Technical Notes stance). Transaction list sort order set to chronological, most recent first (matches Home's Recent Entries convention).
+
+**Artifacts updated:** `1.1-home.md`, `1.2-home.md`, `1.3-home.md`, `2.1-monthly-breakdown.md`, `2.2-monthly-breakdown.md` — Open Questions, Page Sections, Page States, Technical Notes, and (1.2) Layout Structure/Visual Reference updated to match. 1.2's wireframe PNG now trails the spec text (Edit button removed from spec, not yet from the PNG) — flagged inline in that file, spec text is authoritative.
+
+**Next:** Responsive diffs (desktop for Scenario 01, mobile for Scenario 02), then Validate Specs, Design System extraction, Design Delivery
+
+---
+
+### 2026-07-03 — Responsive diffs added for all 5 pages (Phase 4)
+
+**Agent:** Freya
+**Approach:** Layout-only diffs — no new Object IDs, behaviors, or content introduced; each diff reuses the base spec's sections and just re-lays them out for the other breakpoint
+
+- **`D-Design-System/00-design-system.md`** — added a **Breakpoints** section: `bp-mobile` (up to 639px, 375px reference) / `bp-desktop` (640px+, 900px reference), matching the widths already used in the approved base wireframes. Single breakpoint — no tablet tier needed for this scope.
+- **1.1 (desktop)** — Quick Add and Recent Entries go from stacked to side-by-side two-column (Quick Add fixed ~400px left, Recent Entries fills the remainder); all 4 category buttons fit one row instead of wrapping.
+- **1.2 (desktop)** — no change needed; the confirm popup was already a centered fixed-width modal, it just now centers over the wider desktop background.
+- **1.3 (desktop)** — reuses 1.1's desktop two-column layout; toast stays anchored top-right of the full viewport.
+- **2.1 (mobile)** — single-column stack (header → total → chart); bar labels move above each bar instead of beside it so long category names don't squeeze bar width at 375px.
+- **2.2 (mobile)** — the right-side drawer becomes a full-screen sheet (resolves the previously-open "mobile equivalent" question) — same content and Object IDs, just full-bleed instead of partial-width.
+
+**Note:** these are text/ASCII layout specs, not new wireframe PNGs — actual pixel mockups for the new breakpoints would be produced in Visual Design [W] if needed before build.
+
+**Artifacts updated:** all 5 page spec files (new `## Responsive Diff` section each), `D-Design-System/00-design-system.md`
+
+**Next:** Validate Specs [V], Design System extraction [M] (modal pattern), Design Delivery [H]
+
+---
+
+### 2026-07-03 — Validate Specs [V] complete (Phase 4)
+
+**Agent:** Freya
+**Result:** ✅ READY FOR HANDOFF (pending Design System extraction, already next on backlog)
+
+**Issues found and fixed:**
+- 🔴 Broken relative links to `D-Design-System/00-design-system.md` in all 5 page specs (2 levels up used, 3 needed) — 10 link instances corrected
+- 🔴 Inconsistent `## Visual Reference` section placement — 1.2, 1.3, 2.2 had it at document end; moved to match 1.1/2.1's position (right after Design Dialog Findings) for a consistent section order across all 5 pages
+- ⚠️ 1.2 had 2 stale references to the removed Edit button (Overview interactions list, Page States Default row) — updated to tap-to-edit-inline only
+
+**Confirmed passing:** Object ID uniqueness/naming (29 unique IDs, no duplicates/orphans), Design System token usage (no raw px/hex/CSS in specs), states documented on all pages, all Open Questions resolved, translation key consistency
+
+**Known pending (not a defect):** all 5 pages' Checklist still show "Components reference design system" unchecked — expected, resolves via the next backlog item (Design System extraction)
+
+**Artifact created:** `_progress/validation-report.md` (full findings)
+
+**Next:** Design System extraction [M] (modal pattern), then Design Delivery [H]
+
+---
+
+### 2026-07-03 — Design System extraction [M] complete (Phase 4)
+
+**Agent:** Freya
+
+**Extracted:** `Overlay` component in `D-Design-System/00-design-system.md` → Components — the modal/popup pattern had reached its 2nd use (1.2 confirm popup, 2.2 drill-down panel), crossing this project's own "extract on repeat" threshold. Modeled as one component with two variants:
+- **Centered Dialog** (1.2) — write, form fields, footer actions
+- **Drawer / Sheet** (2.2) — read-only, desktop right-side drawer / mobile full-screen sheet, single close control
+
+Shared: scrim/dim background, `space-lg` padding, `space-md` element gap, Default/Loading/Error states. Not fully unified into one configurable shape yet — the two variants' content models differ enough (form vs. read-only list) that forcing a single definition would be premature; revisit if a third instance appears.
+
+**Not extracted (by design):** Toast (1.3) and Bar Chart (2.1) are still single-use — left as tracked candidates under `Patterns` rather than force-extracted, consistent with the project's established "extract on 2nd use, not 1st" convention.
+
+**Artifacts updated:**
+- `D-Design-System/00-design-system.md` — added `Overlay` under Components; reworked `Patterns` to hold the two single-use candidates (Toast, Bar Chart)
+- `1.2-home.md`, `2.2-monthly-breakdown.md` — Component fields now link to the Overlay component; Checklist "Components reference design system" now ✅
+- `1.1-home.md` — Checklist item resolved (Quick Add/Recent Entries are page-specific, not shared components, so nothing to extract)
+- `1.3-home.md`, `2.1-monthly-breakdown.md` — Checklist wording clarified: unchecked is expected (single-use), not a defect
+
+**Next:** Design Delivery [H] — package for dev handoff
+
+---
+
+### 2026-07-03 — Design Delivery [H] complete — Phase 4 backlog cleared
+
+**Agent:** Freya
+**Result:** All Phase 4 backlog items now complete. Project is ready for Phase 5 (Agentic Development).
+
+**Artifacts created:**
+- `deliveries/DD-001-expense-tracking-v1.yaml` — the design/dev contract: user value, both scenarios, the Overlay component, technical requirements (.NET Core + Angular, responsive, zero-cost hosting), data model (single Expense Entry type), acceptance criteria, complexity estimate (S/M, Low risk)
+- `test-scenarios/TS-001-expense-tracking-v1.yaml` — happy-path/error/edge-case tests, design system token validation, accessibility checks, sign-off criteria (single approver: SIDDI)
+- `deliveries/DD-001-handoff-log.md` — condensed briefing covering all 10 standard handoff phases, written for a solo designer-to-builder handoff (this project has no separate architect party) rather than a live two-party dialog
+
+**Flagged for Phase 5 attention:**
+- Authentication scope is unspecified anywhere upstream (Product Brief, scenarios, specs) — current working assumption is single-user/no-login; confirm before backend design
+- 1.2's wireframe PNG is stale (still shows the removed Edit button) — spec text is authoritative; regenerate only if a pixel-accurate reference is needed
+
+**This closes out every item that was in the Phase 4 backlog** (flagged open items → responsive diffs → validate specs → design system extraction → design delivery), completed across this session in Suggest-mode-style batched checkpoints.
+
+**Next:** Phase 5 — Agentic Development (Mimir Builder)
 
 ---
 
