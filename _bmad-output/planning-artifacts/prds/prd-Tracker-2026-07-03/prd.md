@@ -31,26 +31,26 @@ He's driven by autonomy and impatience with friction, and explicitly does not wa
 ## User Journeys
 
 **UJ-1: Siddi Logs an Expense**
-Trigger: he's just paid for something (coffee, cab, groceries) and has a few seconds before moving on. He opens the app directly to the Home screen — no search, no menu — where a quick-add box is always visible. He enters the amount, taps a category, confirms. The entry appears in the list and the current-month running total updates immediately. If he mis-logs something, correcting or deleting it happens right there on the page, not through a separate flow. Outcome: captured in a few seconds, total updates instantly, trust that it registered — the daily streak continues.
+Trigger: he's just paid for something (coffee, cab, groceries) and has a few seconds before moving on. He opens the app directly to the Home screen — no search, no menu — where a quick-add box is always visible. He enters the amount, taps a category, confirms. The entry appears at the top of the list and a toast confirms the save. If he mis-logs something, correcting or deleting it happens right there on the page, not through a separate flow. Outcome: captured in a few seconds, visible confirmation that it registered — the daily streak continues. (The running total itself lives on Monthly Breakdown, not here — see FR-7.)
 
 **UJ-2: Siddi Reviews the Month**
-Trigger: near month-end, unhurried, he sits down specifically to see where his money went. He opens the Monthly Category Breakdown, scans per-category totals at a glance, and spot-checks one or two against his own memory of what he spent. Outcome: a vague feeling of overspending becomes a specific, trustworthy number — the data holds up against his own memory, zero discrepancy.
+Trigger: near month-end, unhurried, he sits down specifically to see where his money went. He opens the Monthly Category Breakdown, scans the running total and per-category bar chart at a glance, and taps into one or two categories that look off to see the underlying transactions and spot-check them against his own memory. Outcome: a vague feeling of overspending becomes a specific, trustworthy number — the data holds up against his own memory, zero discrepancy.
 
 ## Features (v1)
 
 ### Logging
 
 - **FR-1 — Quick-add entry.** Home screen shows an always-visible quick-add box: amount field + category buttons. No navigation, no modal, no multi-step form required to log.
-- **FR-2 — Category selection.** A fixed, short set of single-tap category buttons — no dropdown, no free text, no search. `[ASSUMPTION]` Presets are **Food, Transport, Shopping, Other**, per the built UX prototype's demo data — the PRFAQ flagged the category list as unverified, and this prototype is the only concrete source found. Confirm before build. "Other" is a fourth named category like the rest, not a catch-all safety net — the PRFAQ is explicit the fixed list has no generic catch-all to fall back on.
-- **FR-3 — Save and confirm.** Saving an entry is immediate — no save-and-wait, no confirmation screen. The entry appears in the list and the running total updates in the same action.
+- **FR-2 — Category selection, with the ability to add a new one.** A short set of single-tap category buttons for the seeded presets — **Food, Transport, Shopping, Other** — plus the option to create a new category by name if none of the presets fit; a new name is matched case-insensitively against existing categories before a new one is created. `[OVERRIDE]` Originally specified as a fixed list with no free text and no category management — this PRD now supersedes that in favor of the architecture spine's category-creation decision (AD-3), made during architecture coaching. "Other" remains a fourth named preset, not a catch-all — the no-catch-all framing still holds for the preset set itself; it's category *creation*, not "Other," that now absorbs anything the presets don't cover.
+- **FR-3 — Save and confirm.** Saving an entry is immediate — no save-and-wait, no confirmation screen. The entry appears at the top of the list and a toast confirms the save (e.g., "₹150 added to Food"); the running total itself lives on Monthly Breakdown (FR-7), not Home. `[OVERRIDE]` Originally the confirmation signal was the Home running total updating in the same action — superseded by FR-7's move off Home (see FR-7).
 - **FR-4 — Entry list.** Logged expenses for the current period are visible on the Home screen, each showing amount, category, and time logged. `[ASSUMPTION]` Displaying a timestamp (not just list order) is inferred as necessary for Siddi to spot-check entries against memory — not explicit in any source doc. Confirm before build.
 - **FR-5 — Edit an entry.** Any logged entry can be corrected in place (amount and/or category) directly from the Home screen.
 - **FR-6 — Delete an entry.** Any logged entry can be removed in place from the Home screen.
-- **FR-7 — Live running total.** A current-month running total is visible on Home and updates immediately on every entry, edit, or delete — no refresh or separate "view report" step.
+- **FR-7 — Live running total (on Monthly Breakdown).** A current-month running total is visible on the Monthly Category Breakdown view (FR-8) and updates whenever that view is opened or the viewed month changes — no refresh or separate step. `[OVERRIDE]` Originally specified as visible on Home; Phase 4 UX design (1.3-home) moved it to Monthly Breakdown only, with a save-confirmation toast replacing it as Home's "it registered" signal (FR-3). This PRD text had lagged that already-finalized design decision until now.
 
 ### Review
 
-- **FR-8 — Monthly Category Breakdown.** A separate view shows per-category totals for the current month as plain, exact sums — glanceable, no drill-down required to see the top-level numbers.
+- **FR-8 — Monthly Category Breakdown.** A separate view shows the current-month running total (FR-7) and per-category totals as a bar chart, sorted largest to smallest — glanceable, exact. A month selector (prev/next) browses past months, bounded by the earliest month with any recorded entry through the current month. Tapping a category opens a read-only drill-down panel listing that category's individual transactions (date + amount, most recent first), so a total that looks off can be checked against memory. `[OVERRIDE]` Originally specified as sums-only with "no drill-down required." Phase 4 UX design (2.1/2.2) added the chart and drill-down specifically to resolve the "distrusting a number" fear this same PRD had already flagged as unaddressed (see prior Open Risks) — this PRD text had lagged that already-finalized design decision until now.
 
 ### Entry & Platform
 
@@ -59,7 +59,7 @@ Trigger: near month-end, unhurried, he sits down specifically to see where his m
 
 ## Non-Functional Requirements
 
-- **Security & data handling.** There is no login wall (FR-9), by explicit design — the trust boundary is device access, not an auth gate. Financial entries are still personal data, so storage must be encrypted at rest regardless. `[OVERRIDE]` The PRFAQ originally called real authentication "non-negotiable even at solo scale"; this PRD supersedes that in favor of the Trigger Map's zero-friction-on-open requirement. Revisit if the deployment model ever moves off a single trusted device (shared device, multi-tenant hosting, etc.).
+- **Security & data handling.** There is no login wall (FR-9), by explicit design — the trust boundary is the host machine and its local network, not an auth gate. Financial entries are still personal data, so storage must be encrypted at rest regardless, via the host's OS-level full-disk encryption (BitLocker/Device Encryption/FileVault, whichever the host supports) — the user is responsible for confirming it's actually enabled on their machine, since the app enforces no application-level encryption. `[OVERRIDE]` The PRFAQ originally called real authentication "non-negotiable even at solo scale"; this PRD supersedes that in favor of the Trigger Map's zero-friction-on-open requirement. `[OVERRIDE]` The trust boundary was further widened during architecture coaching from "a single trusted device" to "that device's local network" (any device on the same home LAN can reach the app unauthenticated, not just one machine). Revisit if the deployment model ever moves off the local network (public internet exposure, multi-tenant hosting, a shared/untrusted network, etc.).
 - **Speed.** Logging an expense (FR-1–FR-3) should complete in a few seconds, well under 5 seconds tap-to-update — the Product Brief's bar is sub-few-second for the entry action itself. This is not a nice-to-have — it's the mechanism the retention hypothesis depends on.
 - **Accuracy.** Totals (FR-7, FR-8) must be exact — no estimation, no rounding. A number that looks even slightly wrong breaks the trust the whole loop depends on.
 - **Voice & tone.** All UI copy — errors, empty states, totals — is plain, direct, neutral, and unobtrusive. No judgment, no encouragement, no streak language. This isn't cosmetic: judgment-free copy is one of the specific mitigations for Siddi's abandonment risk. Full tone-of-voice spec lives in the Product Brief and Design System docs; this PRD only carries the constraint.
@@ -69,8 +69,8 @@ Trigger: near month-end, unhurried, he sits down specifically to see where his m
 Locked scope — the biggest risk to this product existing is scope creep turning a weekend build into months. New requests during build defer to a future iteration, not this one.
 
 - Automated capture: SMS/UPI/email/voice parsing, bank-linking, Account Aggregator integration
-- Category management (add/edit/remove/reorder categories)
-- Charts, trends, or visualizations beyond the plain per-category sums in FR-8
+- Category management beyond creation — editing, removing, or reordering existing categories (creating a new one is now in scope, FR-2)
+- Charts, trends, or visualizations beyond the single-month bar chart and category drill-down in FR-8 (e.g., trend-over-time graphs, cross-month comparisons)
 - Gamification: streaks, badges, encouragement/celebration copy
 - Reminders or notifications for missed logging days
 - Shared or multi-user expenses, bill-splitting
@@ -89,7 +89,7 @@ Noted so they aren't rediscovered as "new" ideas mid-build — none of these are
 - CSV export (data portability/continuity)
 - Past-dated entry (log an expense against an earlier date, not just today) — deferred rather than built now to protect locked v1 scope; see Open Risks for the accuracy tradeoff this accepts
 - Reminder mechanism — only reconsidered if forgetting-to-log proves a real problem after launch
-- Category customization — only reconsidered if the fixed FR-2 list proves too rigid in practice
+- Category editing, removal, and reordering — creation is now in v1 (FR-2); only these remaining management actions stay deferred
 - Offline cash-logging resilience
 
 ## Constraints
@@ -102,7 +102,6 @@ Noted so they aren't rediscovered as "new" ideas mid-build — none of these are
 ## Open Risks
 
 - **Fear of forgetting to log has no v1 mitigation.** FR-9's wall-free entry and FR-1's always-visible quick-add box reduce friction once Siddi opens the app, but nothing addresses him not opening it in the first place — or getting distracted mid-entry and never finishing. This is the named, unresolved core abandonment risk — flagged to watch post-launch, not solved by design in v1 (a reminder mechanism is a fast-follow candidate, not a v1 answer).
-- **No way to investigate a total that looks wrong.** Scenario 2's other named fear — distrusting a number and not knowing if it's a bug or real spending — has no v1 answer either. FR-8 is intentionally sums-only, no drill-down. If a total ever looks off, Siddi's only recourse is manually re-adding his own entries.
 - **Entry timestamps are an assumption (FR-4).** No source doc says whether the entry list should show a time logged — assumed necessary for month-review spot-checking. Confirm before build.
-- **Category list is an assumption (FR-2).** Confirm the Food/Transport/Shopping/Other set — sourced from prototype demo data, not an explicit PRFAQ decision — before this becomes a build input.
+- **Preset category set is still a demo-data assumption (FR-2).** The Food/Transport/Shopping/Other presets are sourced from prototype demo data, not an explicit PRFAQ decision — confirm before build. The risk of a wrong/missing preset is now lower than originally scoped, since FR-2 lets the user create a category the presets don't cover, rather than being stuck with a fixed list.
 - **Past-dated entry is deferred, which accepts a real accuracy risk.** The PRFAQ's own fallback for a missed day is "log it from memory once you're back," but with no way to log against a past date, a late entry gets attributed to today instead of when it happened — misattributing spend to the wrong month. Accepted for v1 to keep scope locked; revisit if this causes visible drift in the monthly breakdown.
