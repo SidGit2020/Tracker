@@ -1,0 +1,15 @@
+<div class="quick-add" data-testid="home-quickadd">
+  <p class="quick-add-label">Quick Add</p>
+
+  <app-amount-input [(amount)]="amount"></app-amount-input>
+
+  <app-category-selector [(selectedCategory)]="categoryName"></app-category-selector>
+
+  <button
+    type="button"
+    class="quick-add-submit"
+    data-testid="home-quickadd-submit"
+    [disabled]="!isValid()"
+    (click)="onSubmit()"
+  >Add Expense</button>
+</div>

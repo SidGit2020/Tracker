@@ -1,0 +1,28 @@
+@use 'design-tokens' as tokens;
+
+.quick-add {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-sm;
+  padding: tokens.$space-md;
+}
+
+.quick-add-label {
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+  font-weight: 500;
+  color: var(--muted-text-color, #666);
+  margin: 0;
+}
+
+.quick-add-submit {
+  font-size: tokens.$text-md;
+  line-height: tokens.$text-md-line-height;
+  font-weight: 600;
+  padding: tokens.$space-sm tokens.$space-md;
+}
+
+.quick-add-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

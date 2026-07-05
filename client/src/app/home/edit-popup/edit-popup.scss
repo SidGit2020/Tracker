@@ -1,0 +1,71 @@
+@use 'design-tokens' as tokens;
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-2xs;
+}
+
+.field-label {
+  font-size: tokens.$text-xs;
+  line-height: tokens.$text-xs-line-height;
+  color: var(--muted-text-color, #666);
+}
+
+.field-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$space-xs;
+  background: none;
+  border: none;
+  padding: tokens.$space-xs 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.field-value {
+  font-size: tokens.$text-md;
+  line-height: tokens.$text-md-line-height;
+}
+
+.pencil-icon {
+  font-size: tokens.$text-sm;
+}
+
+.error-message {
+  color: var(--error-color, #b00020);
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+}
+
+.button-primary,
+.button-danger {
+  font-size: tokens.$text-sm;
+  padding: tokens.$space-xs tokens.$space-md;
+}
+
+.button-primary {
+  font-weight: 600;
+}
+
+.button-danger {
+  font-weight: 500;
+  color: var(--error-color, #b00020);
+}
+
+.spinner {
+  display: inline-block;
+  width: tokens.$text-sm;
+  height: tokens.$text-sm;
+  border: 2px solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

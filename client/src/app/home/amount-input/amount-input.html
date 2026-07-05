@@ -1,0 +1,9 @@
+<input
+  type="number"
+  inputmode="decimal"
+  class="amount-input"
+  data-testid="home-quickadd-amount-input"
+  placeholder="Amount"
+  [value]="amount() ?? ''"
+  (input)="onInput($any($event.target).value)"
+/>

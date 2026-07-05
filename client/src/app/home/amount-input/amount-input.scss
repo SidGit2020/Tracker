@@ -1,0 +1,9 @@
+@use 'design-tokens' as tokens;
+
+.amount-input {
+  width: 100%;
+  font-size: tokens.$text-md;
+  line-height: tokens.$text-md-line-height;
+  padding: tokens.$space-xs tokens.$space-sm;
+  box-sizing: border-box;
+}

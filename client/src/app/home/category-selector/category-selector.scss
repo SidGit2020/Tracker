@@ -1,0 +1,49 @@
+@use 'design-tokens' as tokens;
+
+.category-selector {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+}
+
+.category-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.$space-xs;
+
+  @include tokens.bp-desktop {
+    flex-wrap: nowrap;
+  }
+}
+
+.category-button {
+  flex: 1 1 calc(33% - #{tokens.$space-xs});
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+  font-weight: 500;
+  padding: tokens.$space-xs tokens.$space-sm;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @include tokens.bp-desktop {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: tokens.$space-xs tokens.$space-2xs;
+    font-size: tokens.$text-xs;
+  }
+}
+
+.category-button--selected {
+  background: var(--category-button-selected-background, #1a7f37);
+  color: var(--category-button-selected-color, #fff);
+}
+
+.category-custom-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px dashed var(--category-custom-input-border, #999);
+  padding: tokens.$space-xs tokens.$space-sm;
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+}

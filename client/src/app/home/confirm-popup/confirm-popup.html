@@ -1,0 +1,54 @@
+<app-overlay titleText="Confirm Entry" (dismissed)="onCancel()">
+  <div data-testid="home-confirm-popup">
+    <div class="field" data-testid="home-confirm-amount">
+      <span class="field-label">Amount</span>
+      @if (editingAmount()) {
+        <app-amount-input [(amount)]="amount"></app-amount-input>
+      } @else {
+        <button type="button" class="field-display" (click)="editingAmount.set(true)">
+          <span class="field-value">₹{{ amount() }}</span>
+          <span class="pencil-icon" aria-hidden="true">✎</span>
+        </button>
+      }
+    </div>
+
+    <div class="field" data-testid="home-confirm-category">
+      <span class="field-label">Category</span>
+      @if (editingCategory()) {
+        <app-category-selector [(selectedCategory)]="categoryName"></app-category-selector>
+      } @else {
+        <button type="button" class="field-display" (click)="editingCategory.set(true)">
+          <span class="field-value">{{ categoryName() }}</span>
+          <span class="pencil-icon" aria-hidden="true">✎</span>
+        </button>
+      }
+    </div>
+
+    @if (errorMessage()) {
+      <p class="error-message">{{ errorMessage() }}</p>
+    }
+  </div>
+
+  <div overlay-actions>
+    <button
+      type="button"
+      class="button-secondary"
+      data-testid="home-confirm-cancel"
+      [disabled]="saving()"
+      (click)="onCancel()"
+    >Cancel</button>
+    <button
+      type="button"
+      class="button-primary"
+      data-testid="home-confirm-submit"
+      [disabled]="saving()"
+      (click)="onConfirm()"
+    >
+      @if (saving()) {
+        <span class="spinner" aria-hidden="true"></span>
+      } @else {
+        Confirm
+      }
+    </button>
+  </div>
+</app-overlay>

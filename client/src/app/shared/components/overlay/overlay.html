@@ -1,0 +1,17 @@
+<div class="overlay-scrim" (click)="onScrimClick()">
+  <div
+    class="overlay-panel"
+    [class.overlay-panel--centered-dialog]="variant() === 'centered-dialog'"
+    (click)="$event.stopPropagation()"
+  >
+    @if (titleText()) {
+      <h2 class="overlay-title">{{ titleText() }}</h2>
+    }
+    <div class="overlay-content">
+      <ng-content></ng-content>
+    </div>
+    <div class="overlay-actions">
+      <ng-content select="[overlay-actions]"></ng-content>
+    </div>
+  </div>
+</div>

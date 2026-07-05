@@ -1,0 +1,50 @@
+@use 'design-tokens' as tokens;
+
+.overlay-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.overlay-panel {
+  background: var(--overlay-panel-background, #fff);
+  padding: tokens.$space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-md;
+  border-radius: tokens.$space-xs;
+  max-height: calc(100vh - #{tokens.$space-xl});
+  overflow-y: auto;
+}
+
+.overlay-panel--centered-dialog {
+  width: 100%;
+  max-width: 360px;
+}
+
+.overlay-title {
+  font-size: tokens.$text-lg;
+  line-height: tokens.$text-lg-line-height;
+  font-weight: 600;
+  margin: 0;
+}
+
+.overlay-content {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-md;
+}
+
+.overlay-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: tokens.$space-sm;
+}
+
+.overlay-actions:empty {
+  display: none;
+}

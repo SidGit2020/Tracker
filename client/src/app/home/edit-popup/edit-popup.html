@@ -1,0 +1,54 @@
+<app-overlay titleText="Edit Entry" (dismissed)="onClose()">
+  <div data-testid="home-edit-popup">
+    <div class="field" data-testid="home-edit-amount">
+      <span class="field-label">Amount</span>
+      @if (editingAmount()) {
+        <app-amount-input [(amount)]="amount"></app-amount-input>
+      } @else {
+        <button type="button" class="field-display" (click)="editingAmount.set(true)">
+          <span class="field-value">₹{{ amount() }}</span>
+          <span class="pencil-icon" aria-hidden="true">✎</span>
+        </button>
+      }
+    </div>
+
+    <div class="field" data-testid="home-edit-category">
+      <span class="field-label">Category</span>
+      @if (editingCategory()) {
+        <app-category-selector [(selectedCategory)]="categoryName"></app-category-selector>
+      } @else {
+        <button type="button" class="field-display" (click)="editingCategory.set(true)">
+          <span class="field-value">{{ categoryName() }}</span>
+          <span class="pencil-icon" aria-hidden="true">✎</span>
+        </button>
+      }
+    </div>
+
+    @if (errorMessage()) {
+      <p class="error-message">{{ errorMessage() }}</p>
+    }
+  </div>
+
+  <div overlay-actions>
+    <button
+      type="button"
+      class="button-danger"
+      data-testid="home-edit-delete"
+      [disabled]="saving() || deleting()"
+      (click)="onDelete()"
+    >{{ deleteArmed() ? 'Confirm Delete' : 'Delete' }}</button>
+    <button
+      type="button"
+      class="button-primary"
+      data-testid="home-edit-save"
+      [disabled]="saving() || deleting()"
+      (click)="onSave()"
+    >
+      @if (saving()) {
+        <span class="spinner" aria-hidden="true"></span>
+      } @else {
+        Save
+      }
+    </button>
+  </div>
+</app-overlay>

@@ -1,0 +1,21 @@
+<div class="category-selector">
+  <div class="category-button-row">
+    @for (preset of presets; track preset) {
+      <button
+        type="button"
+        class="category-button"
+        [class.category-button--selected]="isPresetSelected(preset)"
+        [attr.data-testid]="'home-quickadd-category-' + preset.toLowerCase()"
+        (click)="selectPreset(preset)"
+      >{{ preset }}</button>
+    }
+  </div>
+  <input
+    type="text"
+    class="category-custom-input"
+    data-testid="home-quickadd-category-custom-input"
+    placeholder="+ Type a new category"
+    [value]="isCustomActive() ? selectedCategory() : ''"
+    (input)="onCustomInput($any($event.target).value)"
+  />
+</div>

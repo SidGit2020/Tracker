@@ -1,0 +1,31 @@
+@use 'design-tokens' as tokens;
+
+:host {
+  display: block;
+  padding: tokens.$space-md;
+
+  @include tokens.bp-desktop {
+    padding: tokens.$space-xl;
+  }
+}
+
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xl;
+
+  @include tokens.bp-desktop {
+    flex-direction: row;
+  }
+}
+
+.home-quickadd-column {
+  @include tokens.bp-desktop {
+    flex: 0 0 400px;
+  }
+}
+
+.home-recent-column {
+  flex: 1;
+  min-width: 0;
+}

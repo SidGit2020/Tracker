@@ -1,0 +1,7 @@
+<div class="toast-container">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div class="toast" data-testid="home-toast">
+      <span class="toast-message" data-testid="home-toast-message">{{ toast.message }}</span>
+    </div>
+  }
+</div>

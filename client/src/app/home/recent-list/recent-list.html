@@ -1,0 +1,50 @@
+<div class="recent" data-testid="home-recent">
+  <div class="recent-header">
+    <h2 class="recent-heading" data-testid="home-recent-heading">Recent Entries</h2>
+    <select
+      class="recent-count-selector"
+      data-testid="home-recent-count-selector"
+      (change)="onCountChange($any($event.target).value)"
+    >
+      @for (option of countOptions; track option) {
+        <option [value]="option" [selected]="option === count()">{{ option }}</option>
+      }
+    </select>
+  </div>
+
+  @switch (state().status) {
+    @case ('loading') {
+      <div class="recent-skeleton">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="recent-skeleton-row"></div>
+        }
+      </div>
+    }
+    @case ('error') {
+      <div class="recent-error">
+        <p>Could not load entries.</p>
+        <button type="button" (click)="onRetry()">Retry</button>
+      </div>
+    }
+    @case ('default') {
+      @if (visibleEntries().length === 0) {
+        <p class="recent-empty">No entries yet this month</p>
+      } @else {
+        <ul class="recent-list">
+          @for (entry of visibleEntries(); track entry.id) {
+            <li
+              class="recent-entry-row"
+              [class.recent-entry-row--highlighted]="toastService.isEntryHighlighted(entry.id)"
+              data-testid="home-recent-entry-row"
+              (click)="rowClicked.emit(entry)"
+            >
+              <span class="entry-amount">₹{{ entry.amount }}</span>
+              <span class="entry-category">{{ entry.category.name }}</span>
+              <span class="entry-date">{{ formatDate(entry.createdAt) }}</span>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+</div>

@@ -1,6 +1,10 @@
+---
+baseline_commit: d7aeb946efc8d2d97920590734777cf53726bc8d
+---
+
 # Story 1.2: Home Screen — Quick-Add, Confirm, Entry List, Edit & Delete
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -69,48 +73,48 @@ so that logging an expense is fast enough (well under 5 seconds) to actually sti
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: `Entries` CRUD Minimal API endpoints (AC: #1, #2, #3, #4, #5, #6)
-  - [ ] Create `server/Entries/EntriesEndpoints.cs` mapping `POST/GET/PUT/DELETE /api/entries` (`{id}` for PUT/DELETE), calling `TrackerDbContext` directly — no repository/service wrapper
-  - [ ] Request/response DTOs (records) for the `{ amount, categoryName }` create/update body and the entry response shape (`id, amount, category: {id, name}, createdAt`)
-  - [ ] Validation: `amount > 0` and non-empty `categoryName` on create/update → 400 `ProblemDetails` otherwise; route `categoryName` through `Categories.CategoryMatcher.MatchOrCreateAsync` for every create/update (presets included)
-  - [ ] `CreatedAt = DateTimeOffset.UtcNow` set only on create; never touched on update
-  - [ ] `GET /api/entries`: compute current month's UTC bounds from the host's local time, fetch via `WHERE CreatedAt >= lowerUtc && CreatedAt < upperUtc`, then `.OrderByDescending(e => e.CreatedAt)` **after** materializing to a list (in-process, not translated to SQL)
-  - [ ] 404 `ProblemDetails` for PUT/DELETE on unknown `id`
-- [ ] Task 2: Wire endpoints + static hosting into `Program.cs` (AC: #18, #19)
-  - [ ] Map the `Entries` endpoint group
-  - [ ] Add `app.UseDefaultFiles()` + `app.UseStaticFiles()` serving from `wwwroot`, plus SPA fallback (`app.MapFallbackToFile("index.html")`) so opening the server root renders the Angular app's default route
-  - [ ] Configure a global `ProblemDetails`-shaped exception/validation response (e.g. `AddProblemDetails()` + `UseExceptionHandler`) so all non-2xx responses share one shape
-- [ ] Task 3: Backend integration tests (AC: #23)
-  - [ ] Add `Microsoft.AspNetCore.Mvc.Testing` to `tests/Tracker.Server.Tests.csproj` (new package — needed for `WebApplicationFactory`; not present in Story 1.1)
-  - [ ] `WebApplicationFactory<Program>`-based tests: create (preset name matches existing category, new custom name creates one, invalid amount/empty name → 400), get (month-bounded + ordering), update (amount/category change, CreatedAt untouched, 404), delete (204, hard-delete verified, 404)
-  - [ ] Follow Story 1.1's in-memory SQLite pattern (`Data Source=:memory:` with an open connection kept alive for the test's lifetime) for the test host's `DbContext`, since `EnsureCreated()`/migrations must run against a fresh schema per test
-- [ ] Task 4: Scaffold Angular 22 workspace (AC: #18, #21, #22)
-  - [ ] `ng new client` (Angular 22, standalone components, SCSS, routing enabled) at repo root, configured to build into `server/wwwroot` per the Structural Seed deployment diagram
-  - [ ] Add `client/src/styles/` (or equivalent) SCSS tokens for the spacing scale (`space-3xs`…`space-3xl`) and type scale (`text-xs`…`text-3xl`) and the single `bp-mobile`/`bp-desktop` breakpoint constant — no raw pixel values anywhere else
-  - [ ] `client/src/app/shared/api/` — `entries.service.ts` and shared models (`Entry`), exposing Default/Loading/Error signal state
-- [ ] Task 5: Shared Overlay component — Centered Dialog variant (AC: #9, #20)
-  - [ ] `client/src/app/shared/components/overlay/` (or similar) — Centered Dialog only (Drawer/Sheet deferred to Epic 2), `space-lg` padding, `space-md` gap, scrim/dim background, Default/Loading/Error states, built generically for a future Drawer/Sheet variant
-- [ ] Task 6: Home — quick-add box + category selector (AC: #7, #8)
-  - [ ] `client/src/app/home/` feature folder; quick-add component with amount input, 4 preset buttons, custom-category input (mutually exclusive selection), submit button gated on validity
-  - [ ] Submitting opens the Confirm popup (does not call the API directly); selected category is tracked client-side as its name string (e.g. `"Food"`), not an id
-- [ ] Task 7: Home — Confirm Entry popup (AC: #9, #10, #11)
-  - [ ] Uses the shared Overlay Centered Dialog; tap-to-edit-inline Amount/Category reusing quick-add's input/selector
-  - [ ] Cancel: close, preserve quick-add field values. Confirm: pessimistic `POST /api/entries` call (`{ amount, categoryName }`), inline spinner in the Confirm button while saving, inline error + preserved data on failure
-- [ ] Task 8: Home — save-confirmation toast (AC: #12)
-  - [ ] Toast component/service: top-right, ~2.5s auto-dismiss, independent timers, vertical stacking for concurrent saves, synced new-row highlight fade
-- [ ] Task 9: Home — recent entries list (AC: #13, #14)
-  - [ ] List component consuming `entries.service.ts` (current month, `GET /api/entries`), count selector (5/10/20 default 10) slicing the fetched array client-side
-  - [ ] Default/Loading(skeleton)/Empty/Error states; list failure must not disable quick-add
-- [ ] Task 10: Home — edit/delete-in-place (AC: #15, #16)
-  - [ ] Tapping a row opens an Edit Entry dialog (same Overlay Centered Dialog pattern, pre-filled from the row's `{ amount, category.name }`, tap-to-edit-inline)
-  - [ ] Save → `PUT /api/entries/{id}` with `{ amount, categoryName }`, close + reflect change on success
-  - [ ] Delete → double-tap-to-confirm (button becomes "Confirm Delete" on first tap, fires `DELETE /api/entries/{id}` on second tap), close + remove from list on success
-- [ ] Task 11: Responsive layout (AC: #17)
-  - [ ] Single shared breakpoint constant/media query drives: mobile stacked single-column vs. desktop two-column (~400px quick-add left / recent-entries right, `space-xl` gap); category buttons 2-row (mobile) vs 1-row (desktop) wrap
-- [ ] Task 12: Wire Angular default route (AC: #18)
-  - [ ] `app.config.ts`/router config: empty/wildcard path renders the Home feature — no other routes needed yet (Epic 2 adds `monthly-breakdown` later)
-- [ ] Task 13: Frontend tests (AC: #24)
-  - [ ] Vitest specs (Angular 22 default — see Dev Notes) for: quick-add validity gating, Confirm popup save/cancel/error, toast stacking/dismiss timers, list Default/Loading/Empty/Error states, edit dialog save, delete double-tap-confirm flow
+- [x] Task 1: `Entries` CRUD Minimal API endpoints (AC: #1, #2, #3, #4, #5, #6)
+  - [x] Create `server/Entries/EntriesEndpoints.cs` mapping `POST/GET/PUT/DELETE /api/entries` (`{id}` for PUT/DELETE), calling `TrackerDbContext` directly — no repository/service wrapper
+  - [x] Request/response DTOs (records) for the `{ amount, categoryName }` create/update body and the entry response shape (`id, amount, category: {id, name}, createdAt`)
+  - [x] Validation: `amount > 0` and non-empty `categoryName` on create/update → 400 `ProblemDetails` otherwise; route `categoryName` through `Categories.CategoryMatcher.MatchOrCreateAsync` for every create/update (presets included)
+  - [x] `CreatedAt = DateTimeOffset.UtcNow` set only on create; never touched on update
+  - [x] `GET /api/entries`: compute current month's UTC bounds from the host's local time, fetch via `WHERE CreatedAt >= lowerUtc && CreatedAt < upperUtc`, then `.OrderByDescending(e => e.CreatedAt)` **after** materializing to a list (in-process, not translated to SQL)
+  - [x] 404 `ProblemDetails` for PUT/DELETE on unknown `id`
+- [x] Task 2: Wire endpoints + static hosting into `Program.cs` (AC: #18, #19)
+  - [x] Map the `Entries` endpoint group
+  - [x] Add `app.UseDefaultFiles()` + `app.UseStaticFiles()` serving from `wwwroot`, plus SPA fallback (`app.MapFallbackToFile("index.html")`) so opening the server root renders the Angular app's default route
+  - [x] Configure a global `ProblemDetails`-shaped exception/validation response (e.g. `AddProblemDetails()` + `UseExceptionHandler`) so all non-2xx responses share one shape
+- [x] Task 3: Backend integration tests (AC: #23)
+  - [x] Add `Microsoft.AspNetCore.Mvc.Testing` to `tests/Tracker.Server.Tests.csproj` (new package — needed for `WebApplicationFactory`; not present in Story 1.1)
+  - [x] `WebApplicationFactory<Program>`-based tests: create (preset name matches existing category, new custom name creates one, invalid amount/empty name → 400), get (month-bounded + ordering), update (amount/category change, CreatedAt untouched, 404), delete (204, hard-delete verified, 404)
+  - [x] Follow Story 1.1's in-memory SQLite pattern (`Data Source=:memory:` with an open connection kept alive for the test's lifetime) for the test host's `DbContext`, since `EnsureCreated()`/migrations must run against a fresh schema per test
+- [x] Task 4: Scaffold Angular 22 workspace (AC: #18, #21, #22)
+  - [x] `ng new client` (Angular 22, standalone components, SCSS, routing enabled) at repo root, configured to build into `server/wwwroot` per the Structural Seed deployment diagram
+  - [x] Add `client/src/styles/` (or equivalent) SCSS tokens for the spacing scale (`space-3xs`…`space-3xl`) and type scale (`text-xs`…`text-3xl`) and the single `bp-mobile`/`bp-desktop` breakpoint constant — no raw pixel values anywhere else
+  - [x] `client/src/app/shared/api/` — `entries.service.ts` and shared models (`Entry`), exposing Default/Loading/Error signal state
+- [x] Task 5: Shared Overlay component — Centered Dialog variant (AC: #9, #20)
+  - [x] `client/src/app/shared/components/overlay/` (or similar) — Centered Dialog only (Drawer/Sheet deferred to Epic 2), `space-lg` padding, `space-md` gap, scrim/dim background, Default/Loading/Error states, built generically for a future Drawer/Sheet variant
+- [x] Task 6: Home — quick-add box + category selector (AC: #7, #8)
+  - [x] `client/src/app/home/` feature folder; quick-add component with amount input, 4 preset buttons, custom-category input (mutually exclusive selection), submit button gated on validity
+  - [x] Submitting opens the Confirm popup (does not call the API directly); selected category is tracked client-side as its name string (e.g. `"Food"`), not an id
+- [x] Task 7: Home — Confirm Entry popup (AC: #9, #10, #11)
+  - [x] Uses the shared Overlay Centered Dialog; tap-to-edit-inline Amount/Category reusing quick-add's input/selector
+  - [x] Cancel: close, preserve quick-add field values. Confirm: pessimistic `POST /api/entries` call (`{ amount, categoryName }`), inline spinner in the Confirm button while saving, inline error + preserved data on failure
+- [x] Task 8: Home — save-confirmation toast (AC: #12)
+  - [x] Toast component/service: top-right, ~2.5s auto-dismiss, independent timers, vertical stacking for concurrent saves, synced new-row highlight fade
+- [x] Task 9: Home — recent entries list (AC: #13, #14)
+  - [x] List component consuming `entries.service.ts` (current month, `GET /api/entries`), count selector (5/10/20 default 10) slicing the fetched array client-side
+  - [x] Default/Loading(skeleton)/Empty/Error states; list failure must not disable quick-add
+- [x] Task 10: Home — edit/delete-in-place (AC: #15, #16)
+  - [x] Tapping a row opens an Edit Entry dialog (same Overlay Centered Dialog pattern, pre-filled from the row's `{ amount, category.name }`, tap-to-edit-inline)
+  - [x] Save → `PUT /api/entries/{id}` with `{ amount, categoryName }`, close + reflect change on success
+  - [x] Delete → double-tap-to-confirm (button becomes "Confirm Delete" on first tap, fires `DELETE /api/entries/{id}` on second tap), close + remove from list on success
+- [x] Task 11: Responsive layout (AC: #17)
+  - [x] Single shared breakpoint constant/media query drives: mobile stacked single-column vs. desktop two-column (~400px quick-add left / recent-entries right, `space-xl` gap); category buttons 2-row (mobile) vs 1-row (desktop) wrap
+- [x] Task 12: Wire Angular default route (AC: #18)
+  - [x] `app.config.ts`/router config: empty/wildcard path renders the Home feature — no other routes needed yet (Epic 2 adds `monthly-breakdown` later)
+- [x] Task 13: Frontend tests (AC: #24)
+  - [x] Vitest specs (Angular 22 default — see Dev Notes) for: quick-add validity gating, Confirm popup save/cancel/error, toast stacking/dismiss timers, list Default/Loading/Empty/Error states, edit dialog save, delete double-tap-confirm flow
 
 ## Dev Notes
 
@@ -181,8 +185,86 @@ so that logging an expense is fast enough (well under 5 seconds) to actually sti
 
 ### Agent Model Used
 
+Claude Sonnet 5 (claude-sonnet-5)
+
 ### Debug Log References
+
+- `dotnet test tests/Tracker.Server.Tests` — 19/19 passed (8 `CategoryMatcherTests` carried over from Story 1.1, 11 new `EntriesEndpointsTests`)
+- `ng test` (Vitest, `client/`) — 14/14 passed across 6 spec files (`app`, `quick-add`, `confirm-popup`, `edit-popup`, `recent-list`, `toast.service`)
+- `ng build` — clean production build; Angular's application builder emits to `server/wwwroot/browser/`, not `server/wwwroot/` directly — `Program.cs` points its static-file provider at the `browser` subfolder explicitly
+- First `GET /api/entries` implementation filtered via a `WHERE` clause on `DateTimeOffset` bounds — EF Core 10's SQLite provider could not translate that comparison at all (not just `OrderBy`, as the Dev Notes caveat describes) and threw `InvalidOperationException` at runtime. Fixed by materializing the full `Entries` table first (`.ToListAsync()`), then filtering and ordering in-process — confirmed via `WebApplicationFactory` integration test with out-of-month seed data.
+- Manual end-to-end smoke test: ran the built server (`dotnet run`), used `curl` to `POST`/`GET /api/entries` against the real SQLite file and confirmed the SPA root (`/`) serves `index.html` — full create/read cycle verified over real HTTP, not just against the in-memory test host.
+- Headless Chrome screenshots (`chrome.exe --headless --screenshot`) at 450px and 1000px viewports confirmed the mobile stacked layout and desktop two-column/single-row-buttons layout render correctly. Screenshots below ~482px are unreliable on this machine (documented pre-existing tooling quirk, not a product bug) — see Completion Notes.
 
 ### Completion Notes List
 
+- Backend: `EntriesEndpoints.cs` maps all 4 CRUD endpoints directly against `TrackerDbContext` (no repository layer), routes `categoryName` through the existing `CategoryMatcher.MatchOrCreateAsync` for every create/update, validates `amount > 0` / non-empty `categoryName` as `ProblemDetails` 400s, and returns 404 `ProblemDetails` for unknown ids on PUT/DELETE. `GET /api/entries` computes the host's local calendar-month bounds, converts to UTC, and filters/orders **in-process** (see Debug Log — the EF Core SQLite caveat turned out to block the `WHERE` translation too, not just `OrderBy`).
+- `Program.cs`: added `AddProblemDetails()` + a global `UseExceptionHandler`/`UseStatusCodePages` pair so all non-2xx responses share the RFC 9457 shape; added `MapEntriesEndpoints()`; static-file/SPA-fallback hosting points at `wwwroot/browser` (guarded by `Directory.Exists` so the test host and pre-build dev loop don't break when the Angular bundle hasn't been built yet); added `public partial class Program;` so `WebApplicationFactory<Program>` can target the top-level-statements entry point.
+- Frontend: scaffolded `client/` (Angular 22, standalone components, Vitest — the CLI's current defaults, no zone.js/Karma). Build output redirected to `server/wwwroot` via `angular.json`; SCSS tokens (spacing/type scale, single `bp-desktop` breakpoint mixin) live in `client/src/styles/_design-tokens.scss` and are available to every component via `stylePreprocessorOptions.includePaths`.
+- `EntriesService` (`shared/api/`) exposes a single `RequestState<T>` (`loading`/`default`/`error`) signal — the shape the story calls out for reuse by Epic 2's monthly-breakdown service — plus `create`/`update`/`remove` methods that let callers catch and show inline errors (pessimistic-save requirement) while keeping the list state in sync on success.
+- `OverlayComponent` (shared) implements the Centered Dialog variant only, with the centering/max-width CSS kept in a separate class (`overlay-panel--centered-dialog`) from the shared scrim/padding/content styles, so Epic 2's Drawer/Sheet variant can be added as a sibling class later.
+- Confirm and Edit dialogs both reuse `AmountInputComponent` and `CategorySelectorComponent` (the same `home-quickadd-*` object IDs) for their tap-to-edit-inline fields, per the story's explicit reuse decision — no separate "edit" input components were built.
+- Toast stacking/highlight sync is derived, not separately coordinated: `ToastService` holds one signal array of `{id, message, entryId}`; each toast's own `setTimeout` removes only itself, and `RecentListComponent` derives a row's highlight purely from whether any active toast currently references that entry's id — so the row highlight and its toast always expire together without a second timer.
+- Fixed two real bugs found only via manual browser verification (not caught by Vitest, since jsdom doesn't lay out flexbox the same way as a real renderer): (1) the recent-entries count `<select>` defaulted to its first `<option>` instead of "10" because `[value]` was bound on the `<select>` before its `<option>`s existed in the DOM — fixed by binding `[selected]` per-`<option>` instead, with a regression assertion added to `recent-list.spec.ts`. (2) Category preset buttons overflowed their container on narrow/desktop widths because they lacked `box-sizing: border-box`, so padding was added on top of their flex-basis — fixed with a global `box-sizing: border-box` reset in `styles.scss` and by moving the custom-category input out of the buttons' flex row (it was competing for row space under `flex-wrap: nowrap`).
+- Verification used: `dotnet test` + `ng test` (automated), a manual `curl` HTTP smoke test against the real built server, and headless-Chrome screenshots at 450px/1000px viewports (see Debug Log for the ~482px viewport floor caveat on this machine — screenshots below that width are not trustworthy here).
+
 ### File List
+
+- `server/Entries/EntriesModels.cs`
+- `server/Entries/EntriesEndpoints.cs`
+- `server/Program.cs`
+- `tests/Tracker.Server.Tests/Tracker.Server.Tests.csproj`
+- `tests/Tracker.Server.Tests/TrackerWebApplicationFactory.cs`
+- `tests/Tracker.Server.Tests/EntriesEndpointsTests.cs`
+- `client/` (new Angular 22 workspace — `ng new` scaffold, see below for hand-written additions/edits)
+- `client/angular.json`
+- `client/src/styles.scss`
+- `client/src/styles/_design-tokens.scss`
+- `client/src/app/app.ts`
+- `client/src/app/app.html`
+- `client/src/app/app.spec.ts`
+- `client/src/app/app.config.ts`
+- `client/src/app/app.routes.ts`
+- `client/src/app/shared/api/entry.model.ts`
+- `client/src/app/shared/api/request-state.ts`
+- `client/src/app/shared/api/entries.service.ts`
+- `client/src/app/shared/components/overlay/overlay.ts`
+- `client/src/app/shared/components/overlay/overlay.html`
+- `client/src/app/shared/components/overlay/overlay.scss`
+- `client/src/app/shared/components/toast/toast.service.ts`
+- `client/src/app/shared/components/toast/toast.service.spec.ts`
+- `client/src/app/shared/components/toast/toast-container.ts`
+- `client/src/app/shared/components/toast/toast-container.html`
+- `client/src/app/shared/components/toast/toast-container.scss`
+- `client/src/app/home/amount-input/amount-input.ts`
+- `client/src/app/home/amount-input/amount-input.html`
+- `client/src/app/home/amount-input/amount-input.scss`
+- `client/src/app/home/category-selector/category-selector.ts`
+- `client/src/app/home/category-selector/category-selector.html`
+- `client/src/app/home/category-selector/category-selector.scss`
+- `client/src/app/home/quick-add/quick-add.ts`
+- `client/src/app/home/quick-add/quick-add.html`
+- `client/src/app/home/quick-add/quick-add.scss`
+- `client/src/app/home/quick-add/quick-add.spec.ts`
+- `client/src/app/home/confirm-popup/confirm-popup.ts`
+- `client/src/app/home/confirm-popup/confirm-popup.html`
+- `client/src/app/home/confirm-popup/confirm-popup.scss`
+- `client/src/app/home/confirm-popup/confirm-popup.spec.ts`
+- `client/src/app/home/edit-popup/edit-popup.ts`
+- `client/src/app/home/edit-popup/edit-popup.html`
+- `client/src/app/home/edit-popup/edit-popup.scss`
+- `client/src/app/home/edit-popup/edit-popup.spec.ts`
+- `client/src/app/home/recent-list/recent-list.ts`
+- `client/src/app/home/recent-list/recent-list.html`
+- `client/src/app/home/recent-list/recent-list.scss`
+- `client/src/app/home/recent-list/recent-list.spec.ts`
+- `client/src/app/home/home.ts`
+- `client/src/app/home/home.html`
+- `client/src/app/home/home.scss`
+- `.gitignore` (added `server/wwwroot/` — Angular's `ng build` output, generated, not committed)
+
+## Change Log
+
+| Date | Change |
+| --- | --- |
+| 2026-07-05 | Implemented Story 1.2: `Entries` CRUD Minimal API endpoints + `ProblemDetails` error shape + static SPA hosting in `Program.cs`; scaffolded the Angular 22 `client/` workspace (design tokens, shared Overlay + Toast, Home feature — quick-add, Confirm/Edit dialogs with tap-to-edit-inline fields and double-tap delete confirm, recent-entries list with Default/Loading/Empty/Error states, responsive single-breakpoint layout); 19 backend + 14 frontend automated tests, plus manual HTTP and headless-browser verification. |

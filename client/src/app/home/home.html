@@ -1,0 +1,23 @@
+<div class="home">
+  <section class="home-quickadd-column">
+    <app-quick-add (submitted)="onQuickAddSubmitted($event)"></app-quick-add>
+  </section>
+  <section class="home-recent-column">
+    <app-recent-list (rowClicked)="onRowClicked($event)"></app-recent-list>
+  </section>
+</div>
+
+@if (pendingEntry(); as pending) {
+  <app-confirm-popup
+    [initialAmount]="pending.amount"
+    [initialCategoryName]="pending.categoryName"
+    (cancelled)="onConfirmCancelled()"
+    (saved)="onConfirmSaved($event)"
+  ></app-confirm-popup>
+}
+
+@if (editingEntry(); as entry) {
+  <app-edit-popup [entry]="entry" (closed)="onEditClosed()"></app-edit-popup>
+}
+
+<app-toast-container></app-toast-container>

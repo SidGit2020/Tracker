@@ -1,0 +1,25 @@
+@use 'design-tokens' as tokens;
+
+.toast-container {
+  position: fixed;
+  top: tokens.$space-md;
+  right: tokens.$space-md;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.toast {
+  padding: tokens.$space-sm tokens.$space-md;
+  background: var(--toast-background, #1a7f37);
+  color: var(--toast-color, #fff);
+  border-radius: tokens.$space-3xs;
+}
+
+.toast-message {
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+  font-weight: 500;
+}
