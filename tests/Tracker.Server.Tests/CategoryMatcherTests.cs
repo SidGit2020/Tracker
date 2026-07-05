@@ -69,4 +69,24 @@ public class CategoryMatcherTests : IDisposable
 
         Assert.False(result.IsPreset);
     }
+
+    [Fact]
+    public async Task MatchOrCreateAsync_UntrimmedMatch_ReturnsExistingCategory()
+    {
+        var food = _db.Categories.Single(c => c.Name == "Food");
+
+        var result = await CategoryMatcher.MatchOrCreateAsync(_db, "  food  ");
+
+        Assert.Equal(food.Id, result.Id);
+        Assert.Single(_db.Categories.Where(c => c.Name == "Food"));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task MatchOrCreateAsync_NullOrWhitespaceName_Throws(string? name)
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() => CategoryMatcher.MatchOrCreateAsync(_db, name!));
+    }
 }

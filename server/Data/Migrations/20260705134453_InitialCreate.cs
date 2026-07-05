@@ -19,7 +19,7 @@ namespace Tracker.Server.Data.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false, collation: "NOCASE"),
                     IsPreset = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -45,7 +45,7 @@ namespace Tracker.Server.Data.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -58,6 +58,12 @@ namespace Tracker.Server.Data.Migrations
                     { 3, true, "Shopping" },
                     { 4, true, "Other" }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_Name",
+                table: "Categories",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Entries_CategoryId",

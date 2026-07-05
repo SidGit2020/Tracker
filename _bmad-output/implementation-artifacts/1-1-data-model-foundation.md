@@ -4,7 +4,7 @@ baseline_commit: c547f505710515c72071f43924de2baa127d8c4e
 
 # Story 1.1: Data Model & Category/Entry Foundation
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -54,6 +54,17 @@ so that every later Epic 1/Epic 2 feature (quick-add, edit, delete, monthly brea
 - [x] Task 5: Structural sanity check (AC: #1, #8)
   - [x] Confirm folder layout matches the Structural Seed tree (`server/Entries/`, `server/Categories/`, `server/Data/`, `Program.cs`)
   - [x] Confirm no `IRepository`/`IService` interfaces were introduced anywhere in this story's code
+
+### Review Findings
+
+- [x] [Review][Decision] Category→Entry FK defaults to `ON DELETE CASCADE` — deleting any `Category` (including a preset) silently deletes every `Entry` referencing it, with no restrict/soft-delete guard. Category delete/edit is out of v1 scope so no app code path triggers this today, but the FK behavior is baked into the schema now via the initial migration — cheaper to decide deliberately here than after real data exists. [server/Data/TrackerDbContext.cs:15-18; server/Data/Migrations/20260705131445_InitialCreate.cs FK definition] — **Resolved:** changed to `DeleteBehavior.Restrict`; migration regenerated.
+- [x] [Review][Patch] `CategoryMatcher.MatchOrCreateAsync` has a TOCTOU race and no DB-level uniqueness on `Category.Name` — concurrent calls with the same new name can both miss the match and both insert, creating duplicate categories despite AC7's "single dedup path" guarantee. [server/Categories/CategoryMatcher.cs:9-20] — **Resolved:** added a case-insensitive (`NOCASE` collation) unique index on `Category.Name`; `MatchOrCreateAsync` now catches `DbUpdateException` on insert conflict and returns the race winner.
+- [x] [Review][Patch] `MatchOrCreateAsync` has no input validation — `null` throws an unhandled `NullReferenceException`, empty/whitespace strings are persisted as valid categories, and untrimmed input (e.g. `"Food "`) is treated as distinct from the trimmed match instead of being normalized. [server/Categories/CategoryMatcher.cs:10] — **Resolved:** added a null/whitespace guard (throws `ArgumentException`) and trims input before matching/creating.
+- [x] [Review][Patch] `Program.cs` calls `db.Database.Migrate()` with no try/catch — any migration failure (locked file, permissions, corrupt DB) crashes startup with a raw unhandled exception and no logged diagnostics. [server/Program.cs:14] — **Resolved:** wrapped in try/catch with `ILogger.LogCritical` before rethrowing.
+- [x] [Review][Defer] `Entry.CreatedAt` has no default and nothing in this story sets it — deferred, belongs to the entry-creation (quick-add) story, which must explicitly set it to `DateTimeOffset.UtcNow`. [server/Entries/Entry.cs:11]
+- [x] [Review][Defer] No domain-value constraints on `Entry.Amount` (no positive/range check) or `Category.Name` (no max length) — deferred, validation belongs to the future entry-creation/category-creation endpoints, not this data-model-only story. [server/Entries/Entry.cs:8; server/Categories/Category.cs:6]
+- [x] [Review][Defer] SQLite connection string `Data Source=../tracker.db` resolves relative to the process's current working directory, not the app base directory — deferred, correct resolution strategy depends on the FR-9 deployment story's launch mechanism. [server/appsettings.json:11]
+- [x] [Review][Defer] SQLite's `LOWER()` is ASCII-only, so non-ASCII category names (e.g. `"Café"` vs `"café"`) won't case-fold and match correctly — deferred, low priority given no i18n requirement in the PRD and single-user English-language usage. [server/Categories/CategoryMatcher.cs:9-10]
 
 ## Dev Notes
 
@@ -125,8 +136,8 @@ Claude Sonnet 5 (claude-sonnet-5)
 - `server/Categories/CategoryMatcher.cs`
 - `server/Entries/Entry.cs`
 - `server/Data/TrackerDbContext.cs`
-- `server/Data/Migrations/20260705131445_InitialCreate.cs`
-- `server/Data/Migrations/20260705131445_InitialCreate.Designer.cs`
+- `server/Data/Migrations/20260705134453_InitialCreate.cs`
+- `server/Data/Migrations/20260705134453_InitialCreate.Designer.cs`
 - `server/Data/Migrations/TrackerDbContextModelSnapshot.cs`
 - `tests/Tracker.Server.Tests/Tracker.Server.Tests.csproj`
 - `tests/Tracker.Server.Tests/CategoryMatcherTests.cs`
@@ -138,3 +149,4 @@ Claude Sonnet 5 (claude-sonnet-5)
 | Date | Change |
 | --- | --- |
 | 2026-07-05 | Implemented Story 1.1: scaffolded `server/` ASP.NET Core Minimal API project (.NET 10), `Category`/`Entry` entities, `TrackerDbContext`, initial EF Core migration with preset-category seed, and the `Categories/` match-or-create function with xUnit test coverage. |
+| 2026-07-05 | Code review fixes: Category→Entry FK changed to `Restrict`; added case-insensitive unique index on `Category.Name`; `MatchOrCreateAsync` now validates/trims input and handles concurrent-insert races; `Program.cs` logs and rethrows on migration failure. Migration regenerated; 4 new tests added (8/8 passing). |

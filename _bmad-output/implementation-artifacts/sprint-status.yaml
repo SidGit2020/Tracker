@@ -53,7 +53,7 @@ story_location: "{project-root}/_bmad-output/implementation-artifacts"
 
 development_status:
   epic-1: in-progress
-  1-1-data-model-foundation: review
+  1-1-data-model-foundation: done
   epic-1-retrospective: optional
   epic-2: backlog
   epic-2-retrospective: optional

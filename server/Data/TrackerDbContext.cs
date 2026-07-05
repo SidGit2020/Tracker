@@ -14,7 +14,16 @@ public class TrackerDbContext(DbContextOptions<TrackerDbContext> options) : DbCo
         modelBuilder.Entity<Category>()
             .HasMany<Entry>()
             .WithOne(e => e.Category)
-            .HasForeignKey(e => e.CategoryId);
+            .HasForeignKey(e => e.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Category>()
+            .Property(c => c.Name)
+            .UseCollation("NOCASE");
+
+        modelBuilder.Entity<Category>()
+            .HasIndex(c => c.Name)
+            .IsUnique();
 
         modelBuilder.Entity<Category>().HasData(
             new Category { Id = 1, Name = "Food", IsPreset = true },

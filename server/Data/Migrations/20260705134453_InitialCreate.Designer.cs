@@ -11,7 +11,7 @@ using Tracker.Server.Data;
 namespace Tracker.Server.Data.Migrations
 {
     [DbContext(typeof(TrackerDbContext))]
-    [Migration("20260705131445_InitialCreate")]
+    [Migration("20260705134453_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -31,9 +31,13 @@ namespace Tracker.Server.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Categories");
 
@@ -91,7 +95,7 @@ namespace Tracker.Server.Data.Migrations
                     b.HasOne("Tracker.Server.Categories.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");
