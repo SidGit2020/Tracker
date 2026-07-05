@@ -27,7 +27,7 @@ This document provides the complete epic breakdown for Tracker, decomposing the 
 FR-1: Quick-add entry — Home screen shows an always-visible quick-add box (amount field + category buttons); no navigation, modal, or multi-step form required to log.
 FR-2: Category selection, with the ability to add a new one — single-tap buttons for seeded presets (Food, Transport, Shopping, Other) plus the option to create a new category by name; new names are matched case-insensitively against existing categories before creating a new one.
 FR-3: Save and confirm — saving an entry is immediate (no save-and-wait/confirmation screen beyond the review popup); the entry appears at the top of the list and a toast confirms the save (e.g., "₹150 added to Food"); the running total lives on Monthly Breakdown (FR-7), not Home.
-FR-4: Entry list — logged expenses for the current period are visible on the Home screen, each showing amount, category, and time logged.
+FR-4: Entry list — logged expenses for the current period are visible on the Home screen, each showing amount, category, and date logged (date only, not time-of-day).
 FR-5: Edit an entry — any logged entry can be corrected in place (amount and/or category) directly from the Home screen.
 FR-6: Delete an entry — any logged entry can be removed in place from the Home screen.
 FR-7: Live running total (on Monthly Breakdown) — a current-month running total is visible on the Monthly Category Breakdown view and updates whenever that view is opened or the viewed month changes.
