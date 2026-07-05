@@ -1,1 +1,5 @@
 .vs/
+bin/
+obj/
+tracker.db
+tracker.db-*

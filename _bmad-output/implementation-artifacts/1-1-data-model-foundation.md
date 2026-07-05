@@ -1,6 +1,10 @@
+---
+baseline_commit: c547f505710515c72071f43924de2baa127d8c4e
+---
+
 # Story 1.1: Data Model & Category/Entry Foundation
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -28,28 +32,28 @@ so that every later Epic 1/Epic 2 feature (quick-add, edit, delete, monthly brea
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Scaffold the `server/` ASP.NET Core project shell (AC: #1, #9, #10)
-  - [ ] `dotnet new` a Minimal API project under `server/` targeting .NET 10
-  - [ ] Create `Entries/`, `Categories/`, `Data/` folders (empty besides what later tasks add)
-  - [ ] Add `appsettings.json` with the SQLite file path setting (e.g. `tracker.db` at repo root per Structural Seed's deployment diagram)
-  - [ ] Add EF Core + `Microsoft.Data.Sqlite`/EF Core SQLite provider NuGet packages — record exact pinned versions used
-- [ ] Task 2: Define the `Category` and `Entry` entities (AC: #2, #3)
-  - [ ] `Category`: `Id` (int PK), `Name` (string), `IsPreset` (bool)
-  - [ ] `Entry`: `Id` (int PK), `Amount` (decimal), `CategoryId` (int FK), `CreatedAt` (DateTimeOffset)
-  - [ ] PascalCase naming per project convention; files grouped by feature, not by "Models/" (e.g. entities can live under `Categories/Category.cs` and `Entries/Entry.cs`, or `Data/` if that reads more naturally — either is acceptable, just don't create a generic cross-feature `Models/` folder)
-- [ ] Task 3: `DbContext` and migrations (AC: #4, #5, #6, #10)
-  - [ ] Create `TrackerDbContext` in `Data/` with `DbSet<Category>` and `DbSet<Entry>`, configuring the FK relationship
-  - [ ] Add the initial EF Core migration (Category + Entry tables)
-  - [ ] Add a seed migration (or seed data in the initial migration) inserting Food/Transport/Shopping/Other with `IsPreset = true`
-  - [ ] Wire `DbContext` registration (from `appsettings.json` connection string) and `Database.Migrate()`-on-startup into `Program.cs`
-- [ ] Task 4: Category match-or-create function (AC: #7, #8, #11)
-  - [ ] Implement the function in `Categories/` — no interface/abstraction wrapper around it
-  - [ ] Case-insensitive name comparison against all existing categories
-  - [ ] Create with `IsPreset = false` when no match found
-  - [ ] Unit tests: exact match, case-insensitive match, no-match-creates-new, `IsPreset` defaults correctly
-- [ ] Task 5: Structural sanity check (AC: #1, #8)
-  - [ ] Confirm folder layout matches the Structural Seed tree (`server/Entries/`, `server/Categories/`, `server/Data/`, `Program.cs`)
-  - [ ] Confirm no `IRepository`/`IService` interfaces were introduced anywhere in this story's code
+- [x] Task 1: Scaffold the `server/` ASP.NET Core project shell (AC: #1, #9, #10)
+  - [x] `dotnet new` a Minimal API project under `server/` targeting .NET 10
+  - [x] Create `Entries/`, `Categories/`, `Data/` folders (empty besides what later tasks add)
+  - [x] Add `appsettings.json` with the SQLite file path setting (e.g. `tracker.db` at repo root per Structural Seed's deployment diagram)
+  - [x] Add EF Core + `Microsoft.Data.Sqlite`/EF Core SQLite provider NuGet packages — record exact pinned versions used
+- [x] Task 2: Define the `Category` and `Entry` entities (AC: #2, #3)
+  - [x] `Category`: `Id` (int PK), `Name` (string), `IsPreset` (bool)
+  - [x] `Entry`: `Id` (int PK), `Amount` (decimal), `CategoryId` (int FK), `CreatedAt` (DateTimeOffset)
+  - [x] PascalCase naming per project convention; files grouped by feature, not by "Models/" (e.g. entities can live under `Categories/Category.cs` and `Entries/Entry.cs`, or `Data/` if that reads more naturally — either is acceptable, just don't create a generic cross-feature `Models/` folder)
+- [x] Task 3: `DbContext` and migrations (AC: #4, #5, #6, #10)
+  - [x] Create `TrackerDbContext` in `Data/` with `DbSet<Category>` and `DbSet<Entry>`, configuring the FK relationship
+  - [x] Add the initial EF Core migration (Category + Entry tables)
+  - [x] Add a seed migration (or seed data in the initial migration) inserting Food/Transport/Shopping/Other with `IsPreset = true`
+  - [x] Wire `DbContext` registration (from `appsettings.json` connection string) and `Database.Migrate()`-on-startup into `Program.cs`
+- [x] Task 4: Category match-or-create function (AC: #7, #8, #11)
+  - [x] Implement the function in `Categories/` — no interface/abstraction wrapper around it
+  - [x] Case-insensitive name comparison against all existing categories
+  - [x] Create with `IsPreset = false` when no match found
+  - [x] Unit tests: exact match, case-insensitive match, no-match-creates-new, `IsPreset` defaults correctly
+- [x] Task 5: Structural sanity check (AC: #1, #8)
+  - [x] Confirm folder layout matches the Structural Seed tree (`server/Entries/`, `server/Categories/`, `server/Data/`, `Program.cs`)
+  - [x] Confirm no `IRepository`/`IService` interfaces were introduced anywhere in this story's code
 
 ## Dev Notes
 
@@ -90,10 +94,47 @@ so that every later Epic 1/Epic 2 feature (quick-add, edit, delete, monthly brea
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Sonnet 5 (claude-sonnet-5)
 
 ### Debug Log References
 
+- `dotnet build server/Tracker.Server.csproj` — succeeded (2 pre-existing NU1903 advisory warnings on `SQLitePCLRaw.lib.e_sqlite3` 2.1.11, the latest available transitive version pulled in by the pinned EF Core Sqlite 10.0.9 provider; no fix currently published)
+- `dotnet run` (server) — confirmed `Database.Migrate()` applies `InitialCreate` on startup and seeds the 4 preset categories into `tracker.db` at repo root
+- `dotnet test tests/Tracker.Server.Tests` — 4/4 passed (CategoryMatcher: exact match, case-insensitive match, no-match-creates-new, IsPreset defaults false)
+
 ### Completion Notes List
 
+- Scaffolded `server/` as a .NET 10 ASP.NET Core Minimal API project; removed the template's sample `WeatherForecast` endpoint and unused `Microsoft.AspNetCore.OpenApi` package so `Program.cs` maps no endpoints, per this story's explicit scope.
+- `Category` (`Id`, `Name`, `IsPreset`) and `Entry` (`Id`, `Amount:decimal`, `CategoryId`, `Category` nav, `CreatedAt:DateTimeOffset`) live in `Categories/Category.cs` and `Entries/Entry.cs` respectively — no generic `Models/` folder.
+- `TrackerDbContext` (`Data/TrackerDbContext.cs`) registers both `DbSet`s and the FK relationship; connection string read from `appsettings.json` (`ConnectionStrings:TrackerDb` = `Data Source=../tracker.db`, resolving to `tracker.db` at repo root per the deployment diagram).
+- Added `Microsoft.EntityFrameworkCore.Sqlite` 10.0.9 and `Microsoft.EntityFrameworkCore.Design` 10.0.9 (both pinned to the .NET 10-compatible version resolved at build time). Installed `dotnet-ef` 10.0.9 as a local tool (`.config/dotnet-tools.json`) to generate migrations.
+- Generated the `InitialCreate` migration (`server/Data/Migrations/`) via schema-first EF Core Migrations (not `EnsureCreated()`), with the four preset categories (Food, Transport, Shopping, Other; `IsPreset = true`) seeded through `HasData` in `OnModelCreating` — applied as `InsertData` in the same migration. `Program.cs` calls `Database.Migrate()` on startup and maps no endpoints.
+- Implemented `CategoryMatcher.MatchOrCreateAsync` (`Categories/CategoryMatcher.cs`) as a plain static function calling `TrackerDbContext` directly — no `IRepository`/`IService` wrapper. Case-insensitive match via `Name.ToLower()` comparison; creates with `IsPreset = false` on no match.
+- Added an xUnit test project at `tests/Tracker.Server.Tests/` (sibling to `server/`, not nested inside it — nesting caused the parent `Tracker.Server.csproj`'s default glob to pick up the test project's files and fail to build). Tests exercise `CategoryMatcher` against a real in-memory SQLite connection (`Data Source=:memory:`) with the EF Core model applied via `EnsureCreated()` (test bootstrap only — production schema creation still goes through migrations in `Program.cs`).
+- Verified folder layout matches the Structural Seed tree exactly and confirmed no `IRepository`/`IService` interfaces exist anywhere in `server/`.
+- `tracker.db`/`tracker.db-*` and `bin/`/`obj/` added to `.gitignore` (runtime/build artifacts, not committed, per the Structural Seed deployment diagram).
+
 ### File List
+
+- `server/Tracker.Server.csproj`
+- `server/Program.cs`
+- `server/appsettings.json`
+- `server/appsettings.Development.json`
+- `server/Properties/launchSettings.json`
+- `server/Categories/Category.cs`
+- `server/Categories/CategoryMatcher.cs`
+- `server/Entries/Entry.cs`
+- `server/Data/TrackerDbContext.cs`
+- `server/Data/Migrations/20260705131445_InitialCreate.cs`
+- `server/Data/Migrations/20260705131445_InitialCreate.Designer.cs`
+- `server/Data/Migrations/TrackerDbContextModelSnapshot.cs`
+- `tests/Tracker.Server.Tests/Tracker.Server.Tests.csproj`
+- `tests/Tracker.Server.Tests/CategoryMatcherTests.cs`
+- `.config/dotnet-tools.json`
+- `.gitignore` (modified)
+
+## Change Log
+
+| Date | Change |
+| --- | --- |
+| 2026-07-05 | Implemented Story 1.1: scaffolded `server/` ASP.NET Core Minimal API project (.NET 10), `Category`/`Entry` entities, `TrackerDbContext`, initial EF Core migration with preset-category seed, and the `Categories/` match-or-create function with xUnit test coverage. |
