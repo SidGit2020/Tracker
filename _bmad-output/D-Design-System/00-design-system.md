@@ -66,7 +66,7 @@ Top-right notification, auto-dismisses on a timer (~2.5s), stacks vertically whe
 
 **Seen once:** 2.1-monthly-breakdown (per-category totals)
 
-Bars sorted largest-to-smallest, width relative to the largest value in the current data set, amount labeled at the bar end (desktop) or above the bar (mobile). Candidate for extraction — revisit if a second chart use appears elsewhere.
+Bars sorted largest-to-smallest, width relative to the largest value in the current data set, amount labeled at the bar end (desktop) or above the bar (mobile). Each bar row is a semantic `<button>` (not a `<div>` with a click handler) — natively keyboard-reachable and Enter/Space-activatable, per DD-001 acceptance testing (ISS-003). Candidate for extraction — revisit if a second chart use appears elsewhere.
 
 ---
 

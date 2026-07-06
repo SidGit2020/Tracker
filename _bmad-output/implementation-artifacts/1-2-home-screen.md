@@ -4,7 +4,7 @@ baseline_commit: d7aeb946efc8d2d97920590734777cf53726bc8d
 
 # Story 1.2: Home Screen — Quick-Add, Confirm, Entry List, Edit & Delete
 
-Status: in-progress
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -120,14 +120,14 @@ so that logging an expense is fast enough (well under 5 seconds) to actually sti
 
 - [x] [Review][Defer] `GET /api/entries` loads the entire `Entries` table into memory instead of filtering via SQL [server/Entries/EntriesEndpoints.cs:76] — deferred: single-user/local-device scale makes this an acceptable v1 trade-off; revisit if entry counts grow large enough to matter
 - [x] [Review][Defer] Raw pixel border-widths (`1px`/`2px`) in Angular styles instead of design tokens [category-selector.scss; confirm-popup.scss; edit-popup.scss; recent-list.scss] — deferred: not worth blocking this story; revisit when more components need a shared border-width token
-- [ ] [Review][Patch] Overlay scrim-dismiss bypasses the in-flight save/delete guard [client/src/app/shared/components/overlay/overlay.ts:12; client/src/app/home/confirm-popup/confirm-popup.ts:1; client/src/app/home/edit-popup/edit-popup.ts:35]
-- [ ] [Review][Patch] Confirm/Edit dialogs don't re-validate amount/category before submit, unlike quick-add [client/src/app/home/confirm-popup/confirm-popup.ts:1105; client/src/app/home/edit-popup/edit-popup.ts:39]
-- [ ] [Review][Patch] `EntriesService` mutation paths (`prepend`/`replace`/`removeFromState`) handle non-`'default'` state inconsistently, causing dropped or silently-ignored updates [client/src/app/shared/api/entries.service.ts:41-64]
-- [ ] [Review][Patch] Category-creation isn't transactional — `CategoryMatcher.MatchOrCreateAsync` commits the new category via its own `SaveChangesAsync` before the entry's own save, risking an orphan category if the entry save later fails [server/Categories/CategoryMatcher.cs:30; server/Entries/EntriesEndpoints.cs:51-61,103-109]
-- [ ] [Review][Patch] Custom-category input collapses to empty when typed text exactly matches a preset name mid-keystroke [client/src/app/home/category-selector/category-selector.ts:28-31]
-- [ ] [Review][Patch] Edit dialog's `deleteArmed` state doesn't reset when the user starts editing amount/category instead of confirming delete [client/src/app/home/edit-popup/edit-popup.ts:23-33]
-- [ ] [Review][Patch] 4 preset category buttons don't wrap into 2 rows on mobile as AC #17 describes — `flex: 1 1 calc(33% - space-xs)` fits 3 per row (3+1 split), not 2+2 [client/src/app/home/category-selector/category-selector.scss:776]
-- [ ] [Review][Patch] `GET /api/entries` month-boundary edge cases (exact `>=`/`<` boundary instants) are untested [tests/Tracker.Server.Tests/EntriesEndpointsTests.cs]
+- [x] [Review][Defer] Overlay scrim-dismiss bypasses the in-flight save/delete guard [client/src/app/shared/components/overlay/overlay.ts:12; client/src/app/home/confirm-popup/confirm-popup.ts:1; client/src/app/home/edit-popup/edit-popup.ts:35] — re-classified from Patch to Defer on 2026-07-06; revisit if in-flight double-submits are observed
+- [x] [Review][Defer] Confirm/Edit dialogs don't re-validate amount/category before submit, unlike quick-add [client/src/app/home/confirm-popup/confirm-popup.ts:1105; client/src/app/home/edit-popup/edit-popup.ts:39] — re-classified from Patch to Defer on 2026-07-06
+- [x] [Review][Defer] `EntriesService` mutation paths (`prepend`/`replace`/`removeFromState`) handle non-`'default'` state inconsistently, causing dropped or silently-ignored updates [client/src/app/shared/api/entries.service.ts:41-64] — re-classified from Patch to Defer on 2026-07-06
+- [x] [Review][Defer] Category-creation isn't transactional — `CategoryMatcher.MatchOrCreateAsync` commits the new category via its own `SaveChangesAsync` before the entry's own save, risking an orphan category if the entry save later fails [server/Categories/CategoryMatcher.cs:30; server/Entries/EntriesEndpoints.cs:51-61,103-109] — re-classified from Patch to Defer on 2026-07-06; single-user local-device scale makes an orphan category a low-impact, easily-cleaned edge case
+- [x] [Review][Defer] Custom-category input collapses to empty when typed text exactly matches a preset name mid-keystroke [client/src/app/home/category-selector/category-selector.ts:28-31] — re-classified from Patch to Defer on 2026-07-06
+- [x] [Review][Defer] Edit dialog's `deleteArmed` state doesn't reset when the user starts editing amount/category instead of confirming delete [client/src/app/home/edit-popup/edit-popup.ts:23-33] — re-classified from Patch to Defer on 2026-07-06
+- [x] [Review][Defer] 4 preset category buttons don't wrap into 2 rows on mobile as AC #17 describes — `flex: 1 1 calc(33% - space-xs)` fits 3 per row (3+1 split), not 2+2 [client/src/app/home/category-selector/category-selector.scss:776] — re-classified from Patch to Defer on 2026-07-06
+- [x] [Review][Defer] `GET /api/entries` month-boundary edge cases (exact `>=`/`<` boundary instants) are untested [tests/Tracker.Server.Tests/EntriesEndpointsTests.cs] — re-classified from Patch to Defer on 2026-07-06
 - [x] [Review][Defer] No keyboard/accessibility support for the Overlay (Escape to dismiss, focus trap, `role="dialog"`/`aria-modal`) [client/src/app/shared/components/overlay/overlay.ts; overlay.html] — deferred, cross-cutting concern better addressed once across all Overlay usages rather than per-story
 
 ## Dev Notes

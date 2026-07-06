@@ -389,6 +389,35 @@ All 3 fixes were regression-tested against the already-passing happy-path/drill-
 
 ---
 
+### 2026-07-06 — Spec gap patched during BMad story writing (Phase 4, [P] Write Specifications)
+
+**Agent:** Freya, invoked from BMad's `bmad-create-story` while writing Story `2-1-monthly-breakdown`
+
+**Trigger:** Writing the BMad story surfaced two UX gaps not covered by the approved specs:
+1. `2.1-monthly-breakdown.md`'s `breakdown-chart-row` spec said only "onClick opens the drill-down panel" — it never documented the keyboard-accessibility requirement that Phase 5 acceptance testing already found, fixed, and closed (**ISS-003**: row must be a semantic `<button>`, not a `<div>`). This was a documentation gap, not a new decision — patched directly.
+2. Whether there's an in-app nav link between Home and Monthly Breakdown was **never decided** in any Phase 4 session — both pages were designed/built as independently-bookmarked entry points (per each scenario's own Entry Context), but nobody ever explicitly confirmed that as the intended nav model versus an oversight. Flagged back to the user rather than assumed.
+
+**Resolved (documentation-only, no new decision):**
+- `2.1-monthly-breakdown.md` — `breakdown-chart-row` Page Section and Technical Notes now specify the `<button>` requirement, Tab-reachability, and Enter/Space activation, citing DD-001/ISS-003
+- `D-Design-System/00-design-system.md` — Horizontal Bar Chart pattern entry now notes the `<button>`-not-`<div>` requirement
+
+**Still open — needs a real design decision:** in-app navigation between Home and Monthly Breakdown. Not yet resolved as of this log entry.
+
+---
+
+### 2026-07-06 — Nav-link design decision resolved (Phase 4, [C]/[P])
+
+**Agent:** Freya
+
+**Decision (user-confirmed):** One-directional nav link from Monthly Breakdown back to Home — "+ Log an expense" text link in the Breakdown header, muted `text-sm` styling (not a CTA-styled button, per the plain/neutral tone NFR). Home stays link-free; FR-9's wall-free/no-menu-funnel design is not reopened by this. Rationale: Siddi reviews spending on Breakdown and may want to immediately log something after — a one-way link resolves that without adding any UI to Home's zero-friction entry point.
+
+**Artifacts updated:**
+- `2.1-monthly-breakdown.md` — new `breakdown-header-home-link` Page Section (under Header), Layout Structure (desktop + mobile ASCII diagrams updated), Responsive Diff table, Typography table
+
+**Both Phase 4 spec gaps found during BMad Story 2-1 writing are now closed.** DD-001's design/dev contract (`deliveries/DD-001-expense-tracking-v1.yaml`) and the Phase 5 prototype (`Prototype/2.1-monthly-breakdown.html`) do not yet reflect this new link — cosmetic drift only, not a spec/build conflict, since Phase 5 for v1 was already signed off before this addition. Flag for whoever builds this in BMad: the link is real spec, the prototype just predates it.
+
+---
+
 ## About This Folder
 
 - **This file** — Single source of truth for project progress
