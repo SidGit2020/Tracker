@@ -1,10 +1,10 @@
 ---
-baseline_commit: 3d11156284661b81f194643ab0968d7a7b659133
+baseline_commit: 9099ebeec28d78a876af45a21c39b3d2053d7565
 ---
 
 # Story 2.1: Monthly Breakdown — Total, Category Bar Chart, Month Navigation
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -56,34 +56,34 @@ This is the first story to add a second route/page to the Angular app (`client/s
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: `GET /api/entries/monthly-summary` endpoint (AC: #1, #2, #3, #4, #5, #6)
-  - [ ] Add `MonthlySummaryResponse`/`CategoryTotalDto` records to `server/Entries/EntriesModels.cs`
-  - [ ] Add the handler to `server/Entries/EntriesEndpoints.cs`, mapped as `group.MapGet("/monthly-summary", GetMonthlySummary)` on the existing `/api/entries` group
-  - [ ] Compute the target month: if `year`/`month` query params are absent, use the host's current local month (same `DateTimeOffset.Now`-based bounds logic as `GetEntries`); otherwise use the given `year`/`month`, converted to UTC bounds the same way
-  - [ ] Validate `month` is 1–12 and the requested year/month is not later than the server's current local month → 400 `ProblemDetails` otherwise
-  - [ ] Materialize **all** entries via `.Include(e => e.Category).ToListAsync()` first (do not attempt a `WHERE` on `DateTimeOffset` — see Dev Notes), then filter to the target month's bounds, group by category, sum `Amount` per group, sort descending, exclude zero-entry categories, all in-process (LINQ-to-Objects)
-  - [ ] Compute `earliestYear`/`earliestMonth` from `MIN(CreatedAt)` over the same materialized full entry list (in-process, not a SQL aggregate); if no entries exist at all, use the current year/month
-- [ ] Task 2: Backend integration tests (AC: #16)
-  - [ ] Extend `tests/Tracker.Server.Tests/EntriesEndpointsTests.cs` (or a new `MonthlySummaryEndpointTests.cs` alongside it) using the existing `WebApplicationFactory`/in-memory-SQLite pattern from Story 1.2
-  - [ ] Cover: default current-month call, explicit past-month call, empty month, invalid month (0/13), future month rejection, earliest-month boundary (including zero-entries-ever case)
-- [ ] Task 3: Shared API model + service (AC: #7, #8, #9)
-  - [ ] `client/src/app/shared/api/monthly-summary.model.ts` — `MonthlySummary` interface (`year`, `month`, `totalAmount`, `categories: { category: Category; amount: number }[]`, `earliestYear`, `earliestMonth`), reusing the existing `Category` interface from `entry.model.ts`
-  - [ ] `client/src/app/shared/api/monthly-summary.service.ts` — signal-based service exposing `RequestState<MonthlySummary>` (reuse the existing `RequestState<T>` type, don't invent a new shape), with a `load(year?: number, month?: number)` method calling `GET /api/entries/monthly-summary`
-- [ ] Task 4: Add `/monthly-breakdown` route (AC: #7)
-  - [ ] Add `MonthlyBreakdownComponent` to `app.routes.ts` at path `monthly-breakdown`, alongside the existing `''` (Home) route
-- [ ] Task 5: Header, home link, and month selector (AC: #8, #9, #10)
-  - [ ] `client/src/app/monthly-breakdown/` feature folder; header component with title, home link, and prev/next month-selector button group
-  - [ ] On init, call `load()` with no args (current month); track the active `year`/`month` from the response, not computed locally
-  - [ ] Prev/next handlers call `load(year, month)` for the adjacent month; disable prev at `earliestYear`/`earliestMonth`, disable next at the response's own `year`/`month` (i.e. can't go past "current")
-  - [ ] `breakdown-header-home-link`: plain `text-sm` muted link, "+ Log an expense", routes to `/` — no reciprocal link added to Home
-- [ ] Task 6: Total summary + bar chart (AC: #11, #12, #13, #14)
-  - [ ] Total summary component/section rendering `totalAmount`
-  - [ ] Bar chart component rendering `categories` in given order as `<button>` rows (no click handler yet), bar width computed relative to the first (largest) item each render, no sort logic in the component
-  - [ ] Responsive layout using the existing `bp-mobile`/`bp-desktop` mixin from `client/src/styles/_design-tokens.scss`; only spacing/type tokens, no raw pixel values
-- [ ] Task 7: Page states (AC: #15)
-  - [ ] Default/Loading(skeleton)/Empty("No entries for {month} {year}")/Error(inline + Retry) driven off the `MonthlySummaryService`'s `RequestState`
-- [ ] Task 8: Frontend tests (AC: #17)
-  - [ ] Vitest specs for month-selector boundary disabling, home-link navigation, bar-width scaling/re-normalization on month switch, render-order-matches-response (no re-sort), chart rows are `<button>` elements, and all four page states
+- [x] Task 1: `GET /api/entries/monthly-summary` endpoint (AC: #1, #2, #3, #4, #5, #6)
+  - [x] Add `MonthlySummaryResponse`/`CategoryTotalDto` records to `server/Entries/EntriesModels.cs`
+  - [x] Add the handler to `server/Entries/EntriesEndpoints.cs`, mapped as `group.MapGet("/monthly-summary", GetMonthlySummary)` on the existing `/api/entries` group
+  - [x] Compute the target month: if `year`/`month` query params are absent, use the host's current local month (same `DateTimeOffset.Now`-based bounds logic as `GetEntries`); otherwise use the given `year`/`month`, converted to UTC bounds the same way
+  - [x] Validate `month` is 1–12 and the requested year/month is not later than the server's current local month → 400 `ProblemDetails` otherwise
+  - [x] Materialize **all** entries via `.Include(e => e.Category).ToListAsync()` first (do not attempt a `WHERE` on `DateTimeOffset` — see Dev Notes), then filter to the target month's bounds, group by category, sum `Amount` per group, sort descending, exclude zero-entry categories, all in-process (LINQ-to-Objects)
+  - [x] Compute `earliestYear`/`earliestMonth` from `MIN(CreatedAt)` over the same materialized full entry list (in-process, not a SQL aggregate); if no entries exist at all, use the current year/month
+- [x] Task 2: Backend integration tests (AC: #16)
+  - [x] Extend `tests/Tracker.Server.Tests/EntriesEndpointsTests.cs` (or a new `MonthlySummaryEndpointTests.cs` alongside it) using the existing `WebApplicationFactory`/in-memory-SQLite pattern from Story 1.2
+  - [x] Cover: default current-month call, explicit past-month call, empty month, invalid month (0/13), future month rejection, earliest-month boundary (including zero-entries-ever case)
+- [x] Task 3: Shared API model + service (AC: #7, #8, #9)
+  - [x] `client/src/app/shared/api/monthly-summary.model.ts` — `MonthlySummary` interface (`year`, `month`, `totalAmount`, `categories: { category: Category; amount: number }[]`, `earliestYear`, `earliestMonth`), reusing the existing `Category` interface from `entry.model.ts`
+  - [x] `client/src/app/shared/api/monthly-summary.service.ts` — signal-based service exposing `RequestState<MonthlySummary>` (reuse the existing `RequestState<T>` type, don't invent a new shape), with a `load(year?: number, month?: number)` method calling `GET /api/entries/monthly-summary`
+- [x] Task 4: Add `/monthly-breakdown` route (AC: #7)
+  - [x] Add `MonthlyBreakdownComponent` to `app.routes.ts` at path `monthly-breakdown`, alongside the existing `''` (Home) route
+- [x] Task 5: Header, home link, and month selector (AC: #8, #9, #10)
+  - [x] `client/src/app/monthly-breakdown/` feature folder; header component with title, home link, and prev/next month-selector button group
+  - [x] On init, call `load()` with no args (current month); track the active `year`/`month` from the response, not computed locally
+  - [x] Prev/next handlers call `load(year, month)` for the adjacent month; disable prev at `earliestYear`/`earliestMonth`, disable next at the response's own `year`/`month` (i.e. can't go past "current")
+  - [x] `breakdown-header-home-link`: plain `text-sm` muted link, "+ Log an expense", routes to `/` — no reciprocal link added to Home
+- [x] Task 6: Total summary + bar chart (AC: #11, #12, #13, #14)
+  - [x] Total summary component/section rendering `totalAmount`
+  - [x] Bar chart component rendering `categories` in given order as `<button>` rows (no click handler yet), bar width computed relative to the first (largest) item each render, no sort logic in the component
+  - [x] Responsive layout using the existing `bp-mobile`/`bp-desktop` mixin from `client/src/styles/_design-tokens.scss`; only spacing/type tokens, no raw pixel values
+- [x] Task 7: Page states (AC: #15)
+  - [x] Default/Loading(skeleton)/Empty("No entries for {month} {year}")/Error(inline + Retry) driven off the `MonthlySummaryService`'s `RequestState`
+- [x] Task 8: Frontend tests (AC: #17)
+  - [x] Vitest specs for month-selector boundary disabling, home-link navigation, bar-width scaling/re-normalization on month switch, render-order-matches-response (no re-sort), chart rows are `<button>` elements, and all four page states
 
 ## Dev Notes
 
@@ -143,8 +143,86 @@ This is the first story to add a second route/page to the Angular app (`client/s
 
 ### Agent Model Used
 
+Claude Sonnet 5 (sub-agent, general-purpose)
+
 ### Debug Log References
+
+None — no blocking issues hit. EF Core SQLite `WHERE`-on-`DateTimeOffset` gotcha from Story 1.2 was proactively avoided by replicating `GetEntries`'s materialize-then-filter-in-process pattern.
 
 ### Completion Notes List
 
+- Backend: 31/31 `dotnet test` passed (20 pre-existing + 11 new `MonthlySummaryEndpointTests`, including 4 added during code review). Frontend: 29/29 `ng test` passed across 9 spec files (14 pre-existing + 15 new, including 2 added during code review). Production build (`npm run build`) verified after review patches too.
+- Deviation: total/category amounts render as `₹{{ amount }}` (raw number, no thousand-separator), matching the existing `recent-list` precedent in Home rather than the design mock's comma-formatted example — no number-formatting library exists in the codebase yet and introducing one was out of scope for this story.
+- All scope exclusions honored: no click handler wired on `breakdown-chart-row`, no drill-down panel, no Overlay Drawer/Sheet variant, no reciprocal Home→Breakdown link.
+- **Code review (3 parallel subagents — blind adversarial, edge-case hunter, acceptance auditor):** acceptance auditor found zero AC/Dev-Note violations across all 17 ACs. Six real bugs were found and auto-patched (all `patch`-classified, no spec ambiguity): (1) missing `year` query-param validation could 500 instead of 400 on out-of-range input; (2) supplying only one of `year`/`month` silently defaulted the other instead of rejecting; (3) DST/offset bug — historical-month bounds reused the *current* instant's UTC offset instead of the target month's own offset; (4) Retry after a failed Prev/Next click re-fetched the last *successful* month instead of the month that actually failed; (5) Prev/Next stayed enabled during an in-flight request, allowing rapid clicks to produce out-of-order response races; (6) a new backend test mixed `UtcNow` (seed) with a separately-called `Now` (assert), a latent flakiness source near month boundaries. Two pre-existing architectural trade-offs (full-table-scan pattern, `GroupBy`-by-entity-reference fragility if `AsNoTracking` is later added) were logged to `deferred-work.md` rather than fixed here, consistent with the same trade-off already accepted for `GetEntries` in Story 1.2. All other adversarial findings (button-with-no-handler, currency formatting, no deep-linking, etc.) were rejected as either explicit spec requirements or unreachable given existing validation/schema constraints.
+
 ### File List
+
+**Backend**
+- `server/Entries/EntriesModels.cs` — added `CategoryTotalDto`, `MonthlySummaryResponse`
+- `server/Entries/EntriesEndpoints.cs` — added `GetMonthlySummary` handler + route mapping
+- `tests/Tracker.Server.Tests/MonthlySummaryEndpointTests.cs` (new)
+
+**Frontend**
+- `client/src/app/shared/api/monthly-summary.model.ts` (new)
+- `client/src/app/shared/api/monthly-summary.service.ts` (new)
+- `client/src/app/app.routes.ts` — added `monthly-breakdown` route
+- `client/src/app/monthly-breakdown/monthly-breakdown.ts` / `.html` / `.scss` / `.spec.ts` (new)
+- `client/src/app/monthly-breakdown/header/header.ts` / `.html` / `.scss` / `.spec.ts` (new)
+- `client/src/app/monthly-breakdown/total-summary/total-summary.ts` / `.html` / `.scss` (new)
+- `client/src/app/monthly-breakdown/bar-chart/bar-chart.ts` / `.html` / `.scss` / `.spec.ts` (new)
+
+## Suggested Review Order
+
+**Backend — month-summary endpoint**
+
+- Entry point: the new handler — validation order (year/month presence, ranges, future-month), then the materialize-then-filter-in-process pattern reused from `GetEntries`.
+  [`EntriesEndpoints.cs:87`](../../server/Entries/EntriesEndpoints.cs#L87)
+
+- Target-month UTC-offset computed per requested month (not the current instant) — fixes a DST edge case caught in code review.
+  [`EntriesEndpoints.cs:125`](../../server/Entries/EntriesEndpoints.cs#L125)
+
+- Category grouping/sum/sort and earliest-month derivation, both in-process per the EF Core SQLite caveat (Dev Notes).
+  [`EntriesEndpoints.cs:133`](../../server/Entries/EntriesEndpoints.cs#L133)
+
+- New response DTOs matching the spec's nested `category: { id, name }` shape.
+  [`EntriesModels.cs:9`](../../server/Entries/EntriesModels.cs#L9)
+
+**Frontend — month navigation & retry correctness (code-review fixes)**
+
+- `pendingYear`/`pendingMonth` track the last *requested* month (vs. last successful) so Retry targets the month that actually failed.
+  [`monthly-breakdown.ts:45`](../../client/src/app/monthly-breakdown/monthly-breakdown.ts#L45)
+
+- `onRetry` now reads from `pendingYear`/`pendingMonth` instead of `activeYear`/`activeMonth`.
+  [`monthly-breakdown.ts:138`](../../client/src/app/monthly-breakdown/monthly-breakdown.ts#L138)
+
+- `prevDisabled`/`nextDisabled` also gate on `loading()`, closing the rapid-click race window.
+  [`monthly-breakdown.ts:67`](../../client/src/app/monthly-breakdown/monthly-breakdown.ts#L67)
+
+**Frontend — page composition & states**
+
+- Container wiring header/total/chart to `RequestState` and driving the four page states.
+  [`monthly-breakdown.html:1`](../../client/src/app/monthly-breakdown/monthly-breakdown.html#L1)
+
+- Month selector and home-link markup/behavior.
+  [`header.ts:1`](../../client/src/app/monthly-breakdown/header/header.ts#L1)
+
+- Bar-width scaling relative to the largest category, re-normalizing per month switch.
+  [`bar-chart.ts:1`](../../client/src/app/monthly-breakdown/bar-chart/bar-chart.ts#L1)
+
+- Signal-based `RequestState<MonthlySummary>` service, reusing the established shape.
+  [`monthly-summary.service.ts:1`](../../client/src/app/shared/api/monthly-summary.service.ts#L1)
+
+**Peripherals — tests, types, routing**
+
+- Route registration for the new page.
+  [`app.routes.ts:1`](../../client/src/app/app.routes.ts#L1)
+
+- Shared model types for the summary response.
+  [`monthly-summary.model.ts:1`](../../client/src/app/shared/api/monthly-summary.model.ts#L1)
+
+- Backend integration tests, including the 4 added during review (invalid year, year/month-must-be-paired).
+  [`MonthlySummaryEndpointTests.cs:1`](../../tests/Tracker.Server.Tests/MonthlySummaryEndpointTests.cs#L1)
+
+- Frontend specs, including the 2 added during review (retry-targets-failed-month, nav-disabled-while-loading).
+  [`monthly-breakdown.spec.ts:1`](../../client/src/app/monthly-breakdown/monthly-breakdown.spec.ts#L1)

@@ -1,0 +1,21 @@
+@use 'design-tokens' as tokens;
+
+.breakdown-total {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-2xs;
+}
+
+.breakdown-total-label {
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+  color: var(--muted-text-color, #666);
+  margin: 0;
+}
+
+.breakdown-total-amount {
+  font-size: tokens.$text-3xl;
+  line-height: tokens.$text-3xl-line-height;
+  font-weight: 700;
+  margin: 0;
+}

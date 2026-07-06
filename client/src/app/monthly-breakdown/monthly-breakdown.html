@@ -1,0 +1,37 @@
+<div class="breakdown" data-testid="breakdown-page">
+  <app-breakdown-header
+    [monthLabel]="monthLabel()"
+    [prevDisabled]="prevDisabled()"
+    [nextDisabled]="nextDisabled()"
+    (prevClicked)="onPrev()"
+    (nextClicked)="onNext()"
+  ></app-breakdown-header>
+
+  @switch (state().status) {
+    @case ('loading') {
+      <div class="breakdown-skeleton" data-testid="breakdown-skeleton">
+        <div class="breakdown-skeleton-total"></div>
+        @for (i of [1, 2, 3]; track i) {
+          <div class="breakdown-skeleton-row"></div>
+        }
+      </div>
+    }
+    @case ('error') {
+      <div class="breakdown-error" data-testid="breakdown-error">
+        <p>Could not load monthly summary.</p>
+        <button type="button" (click)="onRetry()">Retry</button>
+      </div>
+    }
+    @case ('default') {
+      @if (summary(); as data) {
+        <app-total-summary [totalAmount]="data.totalAmount"></app-total-summary>
+
+        @if (data.categories.length === 0) {
+          <p class="breakdown-empty" data-testid="breakdown-empty">No entries for {{ monthLabel() }}</p>
+        } @else {
+          <app-bar-chart [categories]="data.categories"></app-bar-chart>
+        }
+      }
+    }
+  }
+</div>

@@ -1,0 +1,52 @@
+@use 'design-tokens' as tokens;
+
+:host {
+  display: block;
+  padding: tokens.$space-md;
+
+  @include tokens.bp-desktop {
+    padding: tokens.$space-xl;
+  }
+}
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-md;
+
+  @include tokens.bp-desktop {
+    gap: tokens.$space-xl;
+  }
+}
+
+.breakdown-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+}
+
+.breakdown-skeleton-total {
+  height: tokens.$space-2xl;
+  background: var(--skeleton-color, #eee);
+  border-radius: tokens.$space-3xs;
+}
+
+.breakdown-skeleton-row {
+  height: tokens.$space-xl;
+  background: var(--skeleton-color, #eee);
+  border-radius: tokens.$space-3xs;
+}
+
+.breakdown-error {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xs;
+  align-items: flex-start;
+}
+
+.breakdown-empty {
+  color: var(--muted-text-color, #666);
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+  text-align: center;
+}

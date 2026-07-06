@@ -1,0 +1,53 @@
+@use 'design-tokens' as tokens;
+
+.breakdown-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: tokens.$space-xs;
+
+  @include tokens.bp-desktop {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.breakdown-header-title {
+  font-size: tokens.$text-xl;
+  line-height: tokens.$text-xl-line-height;
+  font-weight: 600;
+  margin: 0;
+}
+
+.breakdown-header-home-link {
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+  color: var(--muted-text-color, #666);
+  text-decoration: none;
+}
+
+.breakdown-header-month-selector {
+  display: flex;
+  align-items: center;
+  gap: tokens.$space-xs;
+}
+
+.month-nav-button {
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.month-nav-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.month-label {
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+  font-weight: 500;
+}

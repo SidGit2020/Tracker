@@ -1,0 +1,29 @@
+<header class="breakdown-header" data-testid="breakdown-header">
+  <h1 class="breakdown-header-title" data-testid="breakdown-header-title">Monthly Category Breakdown</h1>
+
+  <a
+    class="breakdown-header-home-link"
+    data-testid="breakdown-header-home-link"
+    routerLink="/"
+  >+ Log an expense</a>
+
+  <div class="breakdown-header-month-selector" data-testid="breakdown-header-month-selector">
+    <button
+      type="button"
+      class="month-nav-button"
+      data-testid="breakdown-month-prev"
+      [disabled]="prevDisabled()"
+      (click)="onPrev()"
+      aria-label="Previous month"
+    >‹</button>
+    <span class="month-label" data-testid="breakdown-month-label">{{ monthLabel() }}</span>
+    <button
+      type="button"
+      class="month-nav-button"
+      data-testid="breakdown-month-next"
+      [disabled]="nextDisabled()"
+      (click)="onNext()"
+      aria-label="Next month"
+    >›</button>
+  </div>
+</header>

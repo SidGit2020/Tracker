@@ -1,0 +1,64 @@
+@use 'design-tokens' as tokens;
+
+.breakdown-chart {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-md;
+
+  @include tokens.bp-desktop {
+    gap: tokens.$space-lg;
+  }
+}
+
+.breakdown-chart-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'label amount'
+    'bar bar';
+  align-items: center;
+  gap: tokens.$space-2xs;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  @include tokens.bp-desktop {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: 'label bar amount';
+    gap: tokens.$space-sm;
+  }
+}
+
+.chart-row-label {
+  grid-area: label;
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+  font-weight: 500;
+}
+
+.chart-row-amount {
+  grid-area: amount;
+  font-size: tokens.$text-sm;
+  line-height: tokens.$text-sm-line-height;
+}
+
+.chart-row-bar-track {
+  grid-area: bar;
+  display: block;
+  height: tokens.$space-md;
+  background: var(--bar-track-color, #eee);
+  border-radius: tokens.$space-3xs;
+  overflow: hidden;
+}
+
+.chart-row-bar {
+  display: block;
+  height: 100%;
+  background: var(--bar-fill-color, #1a7f37);
+  border-radius: tokens.$space-3xs;
+}

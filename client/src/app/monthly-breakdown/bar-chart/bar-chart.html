@@ -1,0 +1,11 @@
+<div class="breakdown-chart" data-testid="breakdown-chart">
+  @for (item of categories(); track item.category.id) {
+    <button type="button" class="breakdown-chart-row" data-testid="breakdown-chart-row">
+      <span class="chart-row-label" data-testid="breakdown-chart-row-label">{{ item.category.name }}</span>
+      <span class="chart-row-bar-track">
+        <span class="chart-row-bar" [style.width.%]="widthPercent(item.amount)"></span>
+      </span>
+      <span class="chart-row-amount" data-testid="breakdown-chart-row-amount">₹{{ item.amount }}</span>
+    </button>
+  }
+</div>
