@@ -6,6 +6,7 @@
 **Phase:** 1 — Product Brief
 **Agent:** Saga (Analyst)
 
+Test push
 ---
 
 ## What Belongs Here
@@ -16,7 +17,7 @@ The Product Brief answers five strategic questions:
 2. **Who** is it for? (Target users and their context)
 3. **What** does it need to do? (Core capabilities)
 4. **How** will we know it works? (Success metrics)
-5. **What** are the constraints? (Platform requirements, tech stack)
+5. **What** are the constraints? (Platform requirements, tech stack)dfsdsaf
 
 Everything downstream — trigger maps, scenarios, page specs, design system — traces back to decisions made here. This is the North Star.
 
